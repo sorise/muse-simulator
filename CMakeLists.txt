@@ -17,8 +17,16 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-
+    link_directories("/usr/local/lib")
+    message(STATUS "Build in Linux OS on ${CURRENT_DATETIME} !")
+    SET(OpenSSL_Include_Directory "/usr/include/openssl")
+    SET(OpenSSL_Library_Directory "/usr/lib/x86_64-linux-gnu")
+    set(CMAKE_CXX_FLAGS "${CAMKE_CXX_FLAGS} -std=c++17 -pthread -lcrypto -lssl")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    message(STATUS "Build in Windows OS on ${CURRENT_DATETIME} !")
+    SET(OpenSSL_Include_Directory "C:\\Program Files\\OpenSSL-Win64\\include")
+    SET(OpenSSL_Library_Directory "C:\\Program Files\\OpenSSL-Win64\\lib")
+    SET(OpenSSL_Link_Directory "C:\\Program Files\\OpenSSL-Win64\\bin")
     #解决 visual studio 编码问题,暂时不支持 windows
     if (WIN32)
         add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
@@ -29,7 +37,6 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     else()
         message(STATUS "Non-Visual Studio compiler detected.")
     endif()
-
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 
 else()
@@ -54,36 +61,82 @@ FetchContent_Declare(
         GIT_PROGRESS TRUE
 )
 
-FetchContent_MakeAvailable(muse_timer fmt)
+FetchContent_Declare(
+        secp256k1   #要获取的依赖项的名称
+        GIT_REPOSITORY "git@github.com:bitcoin-core/secp256k1.git" # Git仓库地址
+        GIT_TAG v0.4.1  # 指定要检出的标签或分支
+        GIT_PROGRESS TRUE
+)
+
+FetchContent_MakeAvailable(muse_timer fmt secp256k1)
 
 if (NOT ${muse_timer_POPULATED})
     MESSAGE(FATAL_ERROR "Fail to get muse-timer! ${muse_timer_POPULATED}")
 endif ()
 
 if (NOT ${fmt_POPULATED})
-    MESSAGE(FATAL_ERROR "Fail to get muse-timer! ${fmt_POPULATED}")
+    MESSAGE(FATAL_ERROR "Fail to get fmt! ${fmt_POPULATED}")
+endif ()
+
+if (NOT ${secp256k1_POPULATED})
+    MESSAGE(FATAL_ERROR "Fail to get libsecp256k1! ${secp256k1_POPULATED}")
 endif ()
 
 MESSAGE(STATUS "Download ${muse_timer_SOURCE_DIR}")
 MESSAGE(STATUS "Download ${muse_timer_BINARY_DIR}")
+
 MESSAGE(STATUS "Download ${fmt_SOURCE_DIR}")
 MESSAGE(STATUS "Download ${fmt_BINARY_DIR}")
 
+MESSAGE(STATUS "Download ${secp256k1_SOURCE_DIR}")
+MESSAGE(STATUS "Download ${secp256k1_BINARY_DIR}")
 
+# << 外部头文件
 include_directories(${muse_timer_SOURCE_DIR}/include)
 include_directories(${fmt_SOURCE_DIR}/include)
+include_directories(${secp256k1_SOURCE_DIR}/include)
+include_directories(${OpenSSL_Include_Directory})
 
-#include
+# include
 include_directories(include)
+
+MESSAGE(STATUS "${OpenSSL_Library_Directory}")
+
+find_library(openssl_Find_Result libssl
+        VERSION 3
+        REQUIRED
+)
+
+find_library(crypto_Find_Result libcrypto
+        VERSION 3
+        REQUIRED
+)
+
+#openssl 不在就G
+if (openssl_Find_Result)
+    MESSAGE("-- find openssl-ssl in ${openssl_Find_Result} ----- OK!")
+else ()
+    MESSAGE(FATAL_ERROR "-- didn't find openssl-ssl ----- ERROR!")
+endif ()
+
+#crypto 不在就G
+if (crypto_Find_Result)
+    MESSAGE("-- find openssl-crypto in ${crypto_Find_Result} ----- OK!")
+else ()
+    MESSAGE(FATAL_ERROR "-- didn't find openssl-crypto ----- ERROR!")
+endif ()
+
+# 库文件 >>
+link_directories("${OpenSSL_Link_Directory}")
+link_directories("${OpenSSL_Library_Directory}")
 
 add_library(simulator SHARED
     src/simulator/machines/computer.cpp
     src/simulator/machines/host.cpp
 )
 
-target_link_libraries(simulator PUBLIC fmt museTimer)
+target_link_libraries(simulator PUBLIC fmt museTimer libssl libcrypto secp256k1)
 
 add_executable(runner main.cpp)
 
 target_link_libraries(runner PUBLIC simulator)
-

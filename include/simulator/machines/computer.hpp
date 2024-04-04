@@ -26,7 +26,7 @@ namespace muse::simulator{
         auto set_memory_size(const uint64_t& memory_size) -> void;
         /* 单位为 GHZ */
         auto set_cpu_frequency(const double& cpu_frequency) -> void;
-        /* 单位为 单个  */
+        /* 单位为 单个,意味着能够同时处理多少个任务  */
         auto set_cpu_core_number(const uint64_t& cpu_core_number) -> void;
         /* 单位为 IPV4  */
         auto set_ip_address(const std::string& ip_address) -> void;

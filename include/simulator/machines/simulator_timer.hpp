@@ -3,10 +3,11 @@
 
 #include <cstdint>
 #include <iostream>
+#include "utils/toolkits.hpp"
 
 namespace muse::simulator {
     /* 模拟环境下的定时器 */
-    class simulator_timer {
+    class SIMULATOR_CPP_WIN_API simulator_timer {
     private:
         uint64_t tick;
     };
