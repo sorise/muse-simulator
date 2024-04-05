@@ -133,6 +133,12 @@ link_directories("${OpenSSL_Library_Directory}")
 add_library(simulator SHARED
     src/simulator/machines/computer.cpp
     src/simulator/machines/host.cpp
+    src/simulator/encryption/bitcoin_secp256k1.cpp
+    src/simulator/encryption/ecc_secp256k1.cpp
+    src/simulator/encryption/ecc_sm2_handler.cpp
+    src/simulator/encryption/encryption.cpp
+    src/simulator/encryption/hash_handler.cpp
+    src/simulator/encryption/rsa_handler.cpp
 )
 
 target_link_libraries(simulator PUBLIC fmt museTimer libssl libcrypto secp256k1)
