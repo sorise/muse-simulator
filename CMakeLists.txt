@@ -63,8 +63,8 @@ FetchContent_Declare(
 
 FetchContent_Declare(
         secp256k1   #要获取的依赖项的名称
-        GIT_REPOSITORY "git@github.com:bitcoin-core/secp256k1.git" # Git仓库地址
-        GIT_TAG v0.4.1  # 指定要检出的标签或分支
+        GIT_REPOSITORY "git@github.com:BlockstreamResearch/secp256k1-zkp.git" # Git仓库地址
+        GIT_TAG master  # 指定要检出的标签或分支
         GIT_PROGRESS TRUE
 )
 

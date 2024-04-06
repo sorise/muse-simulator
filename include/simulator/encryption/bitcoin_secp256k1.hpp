@@ -31,6 +31,7 @@ namespace muse::simulator{
      * @private_key = 32 bytes
      * */
     SIMULATOR_CPP_WIN_API EVP_PKEY* convert_private_key(unsigned char *private_key);
+
 }
 
 #endif //MUSE_SIMULATOR_BITCOIN_SECP256K1_HPP

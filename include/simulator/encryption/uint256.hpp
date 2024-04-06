@@ -19,7 +19,7 @@
 namespace muse::chain{
     //多少个字节
     template<unsigned int Bits>
-    class SIMULATOR_CPP_WIN_API base_binary {
+    class base_binary {
     public:
         /* 字节数量 */
         const static constexpr size_t Width = Bits / 8;
@@ -255,7 +255,7 @@ namespace muse::chain{
 };
 
 namespace std{
-    template<> struct SIMULATOR_CPP_WIN_API hash<muse::chain::uint256>{
+    template<> struct hash<muse::chain::uint256>{
     public:
         auto operator()(const muse::chain::uint256& key) const -> size_t {
             return std::hash<std::string>()(key.get_hex());

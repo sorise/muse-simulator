@@ -15,11 +15,12 @@
 #include "openssl/err.h"
 #include "simulator/encryption/uint256.hpp"
 #include "fmt/format.h"
+#include "utils/toolkits.hpp"
 
 namespace muse::chain {
 
     //秘钥长度，公钥512位，私钥256，不适用！
-    class ecc_secp256k1 {
+    class SIMULATOR_CPP_WIN_API ecc_secp256k1 {
     public:
         /* get key */
         static auto get_key() -> std::shared_ptr<EVP_PKEY>;
@@ -53,6 +54,10 @@ namespace muse::chain {
         static auto convert_uint256_to_public_key(const uint256_prefix& pub_key, bool isCompressed = true) -> EVP_PKEY*;
         /* 获得公钥的哈希值 */
         static auto get_public_key_hash_no_compressed(EVP_PKEY* evpPublicKey, uint256& out) -> bool;
+
+        static auto convert_private_key_32B(EVP_PKEY *key) -> std::string;
+
+        static auto convert_public_key_no_compressed_64B(EVP_PKEY *key) -> std::string;
     };
 }
 
