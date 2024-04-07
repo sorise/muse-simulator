@@ -454,3 +454,4 @@ secp256k1_context_destroy(ctx);
 ### 参考文献
 * [Schnorr协议：非交互零知识身份证明和数字签名](https://zhuanlan.zhihu.com/p/107752440)
 * [MuSig2：Schnorr 的多签名](https://www.btcstudy.org/2022/01/18/schnorr-musig2-by-popeller/)
+* [数字化契约如何守护？解析聚合签名的妙用](https://zhuanlan.zhihu.com/p/165375205)
