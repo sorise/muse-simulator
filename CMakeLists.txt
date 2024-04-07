@@ -22,6 +22,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     SET(OpenSSL_Include_Directory "/usr/include/openssl")
     SET(OpenSSL_Library_Directory "/usr/lib/x86_64-linux-gnu")
     set(CMAKE_CXX_FLAGS "${CAMKE_CXX_FLAGS} -std=c++17 -pthread -lcrypto -lssl")
+    set(OpenSSL_LIB_NAME_SSL "ssl")
+    set(OpenSSL_LIB_NAME_CRYPTO "crypto")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     message(STATUS "Build in Windows OS on ${CURRENT_DATETIME} !")
     SET(OpenSSL_Include_Directory "C:\\Program Files\\OpenSSL-Win64\\include")
@@ -37,6 +39,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     else()
         message(STATUS "Non-Visual Studio compiler detected.")
     endif()
+    set(OpenSSL_LIB_NAME_SSL "libssl")
+    set(OpenSSL_LIB_NAME_CRYPTO "libcrypto")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 
 else()
@@ -102,15 +106,8 @@ include_directories(include)
 
 MESSAGE(STATUS "${OpenSSL_Library_Directory}")
 
-find_library(openssl_Find_Result libssl
-        VERSION 3
-        REQUIRED
-)
-
-find_library(crypto_Find_Result libcrypto
-        VERSION 3
-        REQUIRED
-)
+find_library(openssl_Find_Result ${OpenSSL_LIB_NAME_SSL}  VERSION 3 REQUIRED)
+find_library(crypto_Find_Result ${OpenSSL_LIB_NAME_CRYPTO} VERSION 3 REQUIRED)
 
 #openssl 不在就G
 if (openssl_Find_Result)
