@@ -15,11 +15,12 @@
 #include <system_error>
 #include "../encryption/hash_handler.hpp"
 #include "utils/toolkits.hpp"
+#include "serializer/IbinarySerializable.h"
 
 namespace muse::chain{
     //多少个字节
     template<unsigned int Bits>
-    class base_binary {
+    class base_binary: public muse::serializer::IBinarySerializable {
     public:
         /* 字节数量 */
         const static constexpr size_t Width = Bits / 8;
@@ -85,6 +86,8 @@ namespace muse::chain{
         virtual ~base_binary() = default;
 
         auto get_sha3_256() -> base_binary<256>;
+
+        MUSE_IBinarySerializable(data);
     };
 
     template<unsigned int Bits>
