@@ -32,5 +32,21 @@ namespace muse::simulator{
         return fmt::format("ip_address: {}, memory_size: {}, cpu_frequency: {}GHz, cpu_core_number: {}.", this->_ip_address, this->_memory_size, this->_cpu_frequency, this->_cpu_core_number);
     }
 
+    auto computer::get_ip_address() const -> std::string {
+        return this->_ip_address;
+    }
+
+    auto computer::get_memory_size() const -> uint64_t {
+        return this->_memory_size;
+    }
+
+    auto computer::get_cpu_frequency() const -> double {
+        return this->_cpu_frequency;
+    }
+
+    auto computer::get_cpu_core_number() const -> uint64_t {
+        return this->_cpu_core_number;
+    }
+
 
 }

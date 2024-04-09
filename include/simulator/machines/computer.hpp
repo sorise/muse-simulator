@@ -13,8 +13,11 @@ namespace muse::simulator{
     class SIMULATOR_CPP_WIN_API computer{
     private:
         std::string _ip_address;
+
         uint64_t _memory_size; //byte 内存大小
+
         double _cpu_frequency; //hz cpu频率
+
         uint64_t _cpu_core_number; //核心数量
     public:
         computer();
@@ -32,6 +35,15 @@ namespace muse::simulator{
         auto set_ip_address(const std::string& ip_address) -> void;
         /* 字符串 */
         auto to_string() -> std::string;
+
+        [[nodiscard]] auto get_ip_address() const -> std::string;
+
+        [[nodiscard]] auto get_memory_size() const -> uint64_t;
+
+        [[nodiscard]] auto get_cpu_frequency() const -> double;
+
+        [[nodiscard]] auto get_cpu_core_number() const -> uint64_t;
+
     };
 }
 

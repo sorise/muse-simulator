@@ -137,6 +137,9 @@ add_library(simulator SHARED
     src/simulator/encryption/encryption.cpp
     src/simulator/encryption/hash_handler.cpp
     src/simulator/encryption/rsa_handler.cpp
+    src/simulator/simulator.cpp
+    src/simulator/network_dispatcher.cpp
+    src/simulator/consensus/stack_calculator.cpp
     include/serializer/binaryDeserializeView.cpp
     include/serializer/binarySerializer.cpp
     include/serializer/util.cpp

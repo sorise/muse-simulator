@@ -61,16 +61,8 @@ public:
 
 
 int main() {
-    muse::serializer::BinarySerializer serializer;
-    muse::simulator::block blk;
-    blk.height = 1;
-    blk.prev_block_hash = uint256("0x26a1a2bc4");
-    blk.transaction_count = 100;
-    blk.create_time = 123456789;
-    blk.block_size = 250 + 100 * 250;
 
-    serializer.inputArgs(blk);
 
-    serializer.saveToFile("F:\\db\\me\\su\\1.bin");
+
     return 0;
 }
