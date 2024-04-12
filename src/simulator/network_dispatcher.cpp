@@ -14,4 +14,8 @@ namespace muse::simulator {
         this->hosts.push_back(host);
         return true;
     }
+
+    bool network_dispatcher::RPC_Request(TransmitterEvent &&event) {
+
+    }
 }

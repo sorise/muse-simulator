@@ -16,7 +16,6 @@ namespace muse::simulator{
         bool is_running; //机器是否正常运行
     public:
         //行为
-
         auto vote() -> int;
 
         auto vote_hash(std::string name) -> std::string;

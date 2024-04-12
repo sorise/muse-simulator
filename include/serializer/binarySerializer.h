@@ -95,6 +95,8 @@ namespace muse::serializer{
         BinarySerializer();                                         //默认构造函数
         BinarySerializer(const BinarySerializer& other) = delete;   //禁止复制
         BinarySerializer(BinarySerializer &&other) noexcept;        //支持移动操作
+        BinarySerializer& operator=(const BinarySerializer& other) = delete;
+        BinarySerializer& operator=(BinarySerializer&& other) noexcept;
         [[nodiscard]] const char* getBinaryStream() const;                        //返回二进制流的指针
 
         void saveToFile(const std::string& path) const;    //二进制数据存储到文件中

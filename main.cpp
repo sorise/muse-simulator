@@ -5,6 +5,8 @@
 #include <assert.h>
 
 #include "simulator/machines/computer.hpp"
+#include "simulator/machines/transmitter_event.hpp"
+#include "simulator/network_dispatcher.hpp"
 #include "simulator/encryption/hash_handler.hpp"
 #include "simulator/encryption/ecc_secp256k1.hpp"
 #include "simulator/encryption/hash_handler.hpp"
@@ -60,9 +62,23 @@ public:
 };
 
 
+using namespace muse::simulator;
+
 int main() {
 
+    network_dispatcher dispatcher;
 
+    muse::simulator::TransmitterEvent event("127.0.0.1", 15000); //指定远程IP 、Port
+    event.call<int>("read_str", 15, true);    //指定方法
+    event.set_callBack([](Outcome<int> t){      //设置回调
+        if (t.isOK()){
+            printf("OK lambda %d \n", t.value);
+        }else{
+            printf("fail lambda\n");
+        }
+    });
+
+    dispatcher.RPC_Request(std::move(event));
 
     return 0;
 }

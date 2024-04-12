@@ -7,6 +7,7 @@
 #include <shared_mutex>
 #include <string>
 #include <unordered_map>
+#include "machines/transmitter_event.hpp"
 
 namespace muse::simulator {
     class SIMULATOR_CPP_WIN_API network_dispatcher {
@@ -18,7 +19,7 @@ namespace muse::simulator {
     public:
         bool register_host(host* host);
 
-
+        bool RPC_Request(TransmitterEvent &&event);
     };
 }
 
