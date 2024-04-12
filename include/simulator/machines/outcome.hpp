@@ -5,7 +5,8 @@
 #ifndef MUSE_SIMULATOR_OUTCOME_HPP
 #define MUSE_SIMULATOR_OUTCOME_HPP
 #include "failure_reason.hpp"
-#include "rpc_response_header.hpp""
+#include "rpc_response_header.hpp"
+#include "utils/toolkits.hpp"
 
 namespace muse::simulator{
     template<typename R>
@@ -13,14 +14,14 @@ namespace muse::simulator{
         R value;
         RpcResponseHeader response;
         FailureReason protocolReason {FailureReason::OK};
-        bool isOK() const;
+        [[nodiscard]] bool isOK() const;
     };
 
     template<>
     struct Outcome<void> {
         RpcResponseHeader response;
         FailureReason protocolReason {FailureReason::OK};
-        bool isOK() const;
+        [[nodiscard]] bool isOK() const;
     };
 
     template<typename R>

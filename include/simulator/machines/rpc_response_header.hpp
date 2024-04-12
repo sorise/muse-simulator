@@ -2,6 +2,7 @@
 #define MUSE_SIMULATOR_RPC_RESPONSE_HEADER_HPP
 #include <iostream>
 #include "serializer/IbinarySerializable.h"
+#include "utils/toolkits.hpp"
 
 namespace muse::simulator{
     enum class RpcFailureReason:int{
@@ -14,7 +15,7 @@ namespace muse::simulator{
         UnexpectedReturnValue = 6, //返回值非预期
     };
 
-    class RpcResponseHeader: public muse::serializer::IBinarySerializable{
+    class SIMULATOR_CPP_WIN_API RpcResponseHeader: public muse::serializer::IBinarySerializable{
     public:
         static std::string prefix_name;
     private:

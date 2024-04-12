@@ -16,6 +16,6 @@ namespace muse::simulator {
     }
 
     bool network_dispatcher::RPC_Request(TransmitterEvent &&event) {
-
+        return true;
     }
 }

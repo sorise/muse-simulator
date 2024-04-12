@@ -8,10 +8,11 @@
 #include <bitset>
 #include "outcome.hpp"
 #include "response_data.hpp"
+#include "utils/toolkits.hpp"
 
 namespace muse::simulator {
     /* 包装一个发送任务 */
-    class TransmitterEvent{
+    class SIMULATOR_CPP_WIN_API TransmitterEvent{
     public:
         std::string ip_address;             // 服务器地址
         uint16_t port;                      // 端口号

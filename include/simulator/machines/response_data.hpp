@@ -6,10 +6,11 @@
 #include <memory>
 #include <memory_resource>
 #include "failure_reason.hpp"
+#include "utils/toolkits.hpp"
 
 namespace muse::simulator{
     //RPC响应数据
-    class ResponseData{
+    class SIMULATOR_CPP_WIN_API ResponseData{
     public:
         //总共大小
         uint32_t total_size;
