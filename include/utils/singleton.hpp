@@ -5,9 +5,12 @@
 #ifndef MUSE_SIMULATOR_SINGLETON_HPP
 #define MUSE_SIMULATOR_SINGLETON_HPP
 
+#include <memory>
 #include <iostream>
 #include <exception>
+#include <memory_resource>
 #include <fmt/format.h>
+#include "utils/toolkits.hpp"
 
 namespace muse::chain {
     /*
@@ -94,6 +97,36 @@ namespace muse::chain {
     template<typename T>
     std::unique_ptr<T> singleton_lazy_heap<T>::instance_ = nullptr;
 
+
+    template<> class singleton_lazy_heap<std::pmr::synchronized_pool_resource>{
+    private:
+        singleton_lazy_heap() = default;
+        singleton_lazy_heap(const singleton_lazy_heap&) = default;
+        singleton_lazy_heap& operator=(const singleton_lazy_heap&) = default;
+        ~singleton_lazy_heap()= default;
+    public:
+        static std::pmr::synchronized_pool_resource* get_ptr(){
+            std::call_once(_flag, init);
+            return instance_.get();
+        }
+
+        static std::pmr::synchronized_pool_resource& get_reference(){
+            std::call_once(_flag, init);
+            return *instance_;
+        }
+
+        static void init(){
+            std::pmr::pool_options option;
+            option.largest_required_pool_block = 1024*1024*5; //5M
+            option.max_blocks_per_chunk = 4096; //每一个chunk有多少个block
+            instance_ = std::make_unique<std::pmr::synchronized_pool_resource>(option);
+        }
+    private:
+        static std::once_flag _flag;
+        static  std::unique_ptr<std::pmr::synchronized_pool_resource> instance_;
+    };
+
+    using singleton_memory_pool = singleton_lazy_heap<std::pmr::synchronized_pool_resource>;
 
 }
 

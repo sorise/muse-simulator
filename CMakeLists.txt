@@ -128,24 +128,30 @@ link_directories("${OpenSSL_Link_Directory}")
 link_directories("${OpenSSL_Library_Directory}")
 
 add_library(simulator SHARED
-    src/simulator/machines/computer.cpp
-    src/simulator/machines/host.cpp
-    src/simulator/db/block.cpp
-    src/simulator/encryption/bitcoin_secp256k1.cpp
-    src/simulator/encryption/ecc_secp256k1.cpp
-    src/simulator/encryption/ecc_sm2_handler.cpp
-    src/simulator/encryption/encryption.cpp
-    src/simulator/encryption/hash_handler.cpp
-    src/simulator/encryption/rsa_handler.cpp
-    src/simulator/simulator.cpp
-    src/simulator/network_dispatcher.cpp
-    src/simulator/consensus/stack_calculator.cpp
-    src/simulator/machines/response_data.cpp
-    src/simulator/machines/rpc_response_header.cpp
-    src/simulator/machines/transmitter_event.cpp
-    include/serializer/binaryDeserializeView.cpp
-    include/serializer/binarySerializer.cpp
-    include/serializer/util.cpp
+        src/simulator/machines/computer.cpp
+        src/simulator/machines/host.cpp
+        src/simulator/db/block.cpp
+        src/simulator/encryption/bitcoin_secp256k1.cpp
+        src/simulator/encryption/ecc_secp256k1.cpp
+        src/simulator/encryption/ecc_sm2_handler.cpp
+        src/simulator/encryption/encryption.cpp
+        src/simulator/encryption/hash_handler.cpp
+        src/simulator/encryption/rsa_handler.cpp
+        src/simulator/simulator.cpp
+        src/simulator/network_dispatcher.cpp
+        src/simulator/consensus/stack_calculator.cpp
+        src/simulator/machines/response_data.cpp
+        src/simulator/machines/rpc_response_header.cpp
+        src/simulator/machines/transmitter_event.cpp
+        src/simulator/machines/synchronous_registry.cpp
+        src/simulator/machines/simulator_timer.cpp
+        src/simulator/machines/network_card.cpp
+        src/simulator/machines/message.cpp
+        src/utils/singleton.cpp
+        include/serializer/binaryDeserializeView.cpp
+        include/serializer/binarySerializer.cpp
+        include/serializer/util.cpp
+
 )
 
 target_link_libraries(simulator PUBLIC fmt museTimer libssl libcrypto secp256k1)

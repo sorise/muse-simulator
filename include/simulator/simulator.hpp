@@ -12,11 +12,10 @@ namespace muse::simulator{
     class SIMULATOR_CPP_WIN_API simulator {
     private:
         uint64_t tick;
-        network_dispatcher dispatcher;
 
+        network_dispatcher dispatcher;
     public:
         simulator();
-
         //运行实验
         auto run() -> void;
     };

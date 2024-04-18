@@ -38,6 +38,7 @@ namespace muse::simulator {
                     }
                 } catch (...) {
                     //读取错误，返回值非预期
+                    fmt::print("read error!\n");
                     result.response.setOkState(false);
                     result.response.setReason(RpcFailureReason::UnexpectedReturnValue);
                 }
@@ -185,7 +186,7 @@ namespace muse::simulator {
 
         [[nodiscard]] bool get_remote_state() const;
 
-        const muse::serializer::BinarySerializer& get_serializer();
+        muse::serializer::BinarySerializer& get_serializer();
 
         const std::string&  get_ip_address();
 

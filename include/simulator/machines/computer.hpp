@@ -22,6 +22,10 @@ namespace muse::simulator{
     public:
         computer();
 
+        computer(std::string ip_address, const uint64_t& memory_size, const double& cpu_frequency, const uint64_t& cpu_core_number);
+
+        ~computer() = default;
+
         computer(const computer& other) = default;
 
         computer(computer&& other) noexcept ;

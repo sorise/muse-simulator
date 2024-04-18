@@ -1,7 +1,6 @@
 #include "simulator/simulator.hpp"
 
 namespace muse::simulator{
-
     auto simulator::run() -> void {
 
     }

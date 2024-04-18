@@ -234,3 +234,40 @@ int main(void) {
 }
 
 ```
+
+
+### rpc
+```cpp
+    host ht;
+    synchronous_registry registry;
+
+    registry.Bind("rpc::vote",&host::vote);
+    registry.Bind("rpc::vote_hash",&host::vote_hash);
+    registry.Bind("rpc::add",&host::add);
+
+
+    TransmitterEvent event("127.0.0.1",8080);
+    event.call<int>("rpc::add", 15 , 25);
+    event.set_callBack([](Outcome<int> t){      //设置回调
+        if (t.isOK()){
+            printf("OK lambda %d \n", t.value);
+        }else{
+            printf("fail lambda\n");
+        }
+    });
+
+    network_dispatcher dispatcher;
+    dispatcher.RPC_Request(std::move(event));
+
+    event.get_serializer().reset();
+
+    std::string rpc_name;
+    event.get_serializer().output(rpc_name);
+    std::cout << rpc_name << std::endl;
+    registry.runEnsured("rpc::add", &(event.get_serializer()));
+
+    ResponseData response = synchronous_registry::convert_result_to_response(&(event.get_serializer()));
+
+
+    event.trigger_callBack(&response);
+```

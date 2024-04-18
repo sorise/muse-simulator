@@ -27,7 +27,7 @@ namespace muse::simulator{
         return this->ip_address;
     }
 
-    const muse::serializer::BinarySerializer& TransmitterEvent::get_serializer(){
+    muse::serializer::BinarySerializer& TransmitterEvent::get_serializer(){
         return this->serializer;
     }
 

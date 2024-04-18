@@ -1,3 +1,5 @@
+#include <utility>
+
 #include "simulator/machines/computer.hpp"
 
 
@@ -46,6 +48,11 @@ namespace muse::simulator{
 
     auto computer::get_cpu_core_number() const -> uint64_t {
         return this->_cpu_core_number;
+    }
+
+    computer::computer(std::string ip_address, const uint64_t &memory_size, const double &cpu_frequency,const uint64_t &cpu_core_number)
+    :_ip_address(std::move(ip_address)), _memory_size(memory_size), _cpu_frequency(cpu_frequency), _cpu_core_number(cpu_core_number){
+
     }
 
 

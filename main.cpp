@@ -5,7 +5,9 @@
 #include <assert.h>
 
 #include "simulator/machines/computer.hpp"
+#include "simulator/machines/network_card.hpp"
 #include "simulator/machines/transmitter_event.hpp"
+#include "simulator/machines/synchronous_registry.hpp"
 #include "simulator/network_dispatcher.hpp"
 #include "simulator/encryption/hash_handler.hpp"
 #include "simulator/encryption/ecc_secp256k1.hpp"
@@ -40,6 +42,11 @@ private:
     mutable std::shared_mutex mtx;
     int age{0};
 public:
+
+    explicit Person(const int& _age): age(_age){
+
+    }
+
     MUSE_IBinarySerializable(age);
 
     [[nodiscard]] int get_age() const{
@@ -52,7 +59,7 @@ public:
         this->age = _age;
     }
 
-    ~Person(){
+    virtual ~Person(){
         fmt::print("Person destructor!\n");
     }
 
@@ -66,19 +73,28 @@ using namespace muse::simulator;
 
 int main() {
 
-    network_dispatcher dispatcher;
+    network_card_task task1(100,5,15);
+    network_card_task task2(100,15,25);
+    network_card_task task3(120,18,25);
+    std::map<network_card_task, bool> sending_tasks;
+    sending_tasks.emplace(task1, true);
+    sending_tasks.emplace(task2, true);
+    sending_tasks.emplace(task3, true);
 
-    muse::simulator::TransmitterEvent event("127.0.0.1", 15000); //指定远程IP 、Port
-    event.call<int>("read_str", 15, true);    //指定方法
-    event.set_callBack([](Outcome<int> t){      //设置回调
-        if (t.isOK()){
-            printf("OK lambda %d \n", t.value);
-        }else{
-            printf("fail lambda\n");
-        }
-    });
+    for (auto& [k,v]: sending_tasks) {
+        fmt::print("{}:{}\n",k.get_start_ms(), k.get_end_ms());
+    }
 
-    dispatcher.RPC_Request(std::move(event));
+//    host *h1 = new host("159.52.112.10", 2147483648ll * 8l, 3.5, 8);
+//    host *h2 = new host("159.52.112.11", 2147483648ll * 8l, 3.5, 8);
+//
+//    network_dispatcher net;
+//    net.register_host(h1);
+//    net.register_host(h2);
+//
+//
+//
+//    delete h1, h2;
 
     return 0;
 }
