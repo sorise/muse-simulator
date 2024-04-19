@@ -83,11 +83,11 @@ namespace muse::chain {
             std::call_once(_flag, init);
             return *instance_;
         }
-
+    private:
         static void init(){
             instance_ = std::unique_ptr<T>(new T());
         }
-    private:
+
         static std::once_flag _flag;
         static  std::unique_ptr<T> instance_;
     };
@@ -114,20 +114,19 @@ namespace muse::chain {
             std::call_once(_flag, init);
             return *instance_;
         }
-
+    private:
         static void init(){
             std::pmr::pool_options option;
             option.largest_required_pool_block = 1024*1024*5; //5M
             option.max_blocks_per_chunk = 4096; //每一个chunk有多少个block
             instance_ = std::make_unique<std::pmr::synchronized_pool_resource>(option);
         }
-    private:
+
         static std::once_flag _flag;
         static  std::unique_ptr<std::pmr::synchronized_pool_resource> instance_;
     };
 
     using singleton_memory_pool = singleton_lazy_heap<std::pmr::synchronized_pool_resource>;
-
 }
 
 #endif //MUSE_SIMULATOR_SINGLETON_HPP

@@ -145,6 +145,7 @@ add_library(simulator SHARED
         src/simulator/machines/transmitter_event.cpp
         src/simulator/machines/synchronous_registry.cpp
         src/simulator/machines/simulator_timer.cpp
+        src/simulator/machines/host_delay_matrix.cpp
         src/simulator/machines/network_card.cpp
         src/simulator/machines/message.cpp
         src/simulator/machines/simulator_net_event_queue.cpp

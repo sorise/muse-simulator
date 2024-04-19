@@ -1,6 +1,8 @@
 #ifndef MUSE_SIMULATOR_SIMULATOR_EVENT_QUEUE_HPP
 #define MUSE_SIMULATOR_SIMULATOR_EVENT_QUEUE_HPP
 
+#include <mutex>
+#include <shared_mutex>
 #include "message.hpp"
 #include "host.hpp"
 
@@ -18,14 +20,24 @@ namespace muse::simulator {
     };
 
     //事件
-    class simulator_event{
-        simulator_net_event_type  event_type_;
+    struct simulator_event{
+        simulator_net_event_type event_type_;
         message* message_;
     };
 
     class simulator_net_event_queue {
+    private:
+        static std::unique_ptr<std::queue<simulator_event>> instance_;
+        static std::shared_mutex mutex_;
     public:
-        static std::unique_ptr<simulator_net_event_queue> instance_;
+        //插入事件
+        static auto insert_event(simulator_event event) -> void;
+
+        //判断空
+        static auto is_empty() -> bool;
+
+        //获取事件
+        static auto pop_event() -> simulator_event;
     };
 }
 

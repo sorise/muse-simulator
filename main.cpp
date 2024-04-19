@@ -5,6 +5,7 @@
 #include <assert.h>
 
 #include "simulator/machines/computer.hpp"
+#include "simulator/machines/host_delay_matrix.hpp"
 #include "simulator/machines/network_card.hpp"
 #include "simulator/machines/transmitter_event.hpp"
 #include "simulator/machines/synchronous_registry.hpp"
@@ -72,23 +73,24 @@ public:
 using namespace muse::simulator;
 
 int main() {
-    network_card nc(2621440ull); // 2.5MB/s = 10Mbps
-
-    network_card_task task1(nullptr,100,5,15);
-    network_card_task task2(nullptr,100,15,25);
-    network_card_task task3(nullptr,120,18,25);
-    network_card_task task4(nullptr,120,18,75);
-
-    std::map<network_card_task, bool> sending_tasks;
-
-    sending_tasks.emplace(task1, true);
-    sending_tasks.emplace(task2, true);
-    sending_tasks.emplace(task3, true);
-    sending_tasks.emplace(task4, true);
-
-    for (auto& [k,v]: sending_tasks) {
-        fmt::print("{}:{}\n",k.get_start_ms(), k.get_end_ms());
-    }
+    HOST_DELAY_MATRIX::get_reference().initial(host_delay_type::Unified_Latency,15,30);
+//    network_card nc(2621440ull); // 2.5MB/s = 10Mbps
+//
+//    network_card_task task1(nullptr,100,5,15);
+//    network_card_task task2(nullptr,100,15,25);
+//    network_card_task task3(nullptr,120,18,25);
+//    network_card_task task4(nullptr,120,18,75);
+//
+//    std::map<network_card_task, bool> sending_tasks;
+//
+//    sending_tasks.emplace(task1, true);
+//    sending_tasks.emplace(task2, true);
+//    sending_tasks.emplace(task3, true);
+//    sending_tasks.emplace(task4, true);
+//
+//    for (auto& [k,v]: sending_tasks) {
+//        fmt::print("{}:{}\n",k.get_start_ms(), k.get_end_ms());
+//    }
 
 //    host *h1 = new host("159.52.112.10", 2147483648ll * 8l, 3.5, 8);
 //    host *h2 = new host("159.52.112.11", 2147483648ll * 8l, 3.5, 8);

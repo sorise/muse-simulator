@@ -10,10 +10,10 @@ namespace muse::simulator {
         if (msg == nullptr){
             return false;
         }
+        //需要判断 msg的哪个阶段
+
         network_card_task task(msg, msg->bytes, 0,0);
         //计算剩余可用带宽
-
-
         return true;
     }
 
@@ -22,10 +22,43 @@ namespace muse::simulator {
             return this->band_width_;
         }
         uint64_t used_band_width = 0;
-        std::for_each(sending_tasks.begin(), sending_tasks.end(), [&used_band_width](const std::pair<network_card_task, message*>& kv){
-            used_band_width += kv.first.get_float_bytes();
-        });
+//        std::for_each(sending_tasks.begin(), sending_tasks.end(), [&used_band_width](const std::pair<network_card_task, message*>& kv){
+//            used_band_width += kv.first.get_float_bytes();
+//        });
         return this->band_width_ - used_band_width;
+    }
+
+    auto network_card::next_tick(const uint64_t& tick) -> void {
+        //判断是否有任务等待发送
+        uint64_t left_float_bytes = this->band_width_current_ms_;
+
+        if (!sending_tasks.empty()){
+            //检查是否发生完了，发生完毕需要触发事件
+            auto start = sending_tasks.begin();
+            while (start != sending_tasks.end()){
+                //数据已经发生完毕了，需要挂到延迟队列里面去
+                if (start->first.get_left_bytes() == 0){
+                    message* ptr = start->second;
+                    //如果再请求阶段，需要服务器触发事件
+                    if (ptr->get_rpc_phase() == message_rpc_phase::RPC_REQUEST){
+                        auto delay = tick + HOST_DELAY_MATRIX::get_reference().get_delay(ptr->sender_ip, ptr->acceptor_id);
+                        waiting_tasks_set.emplace(delay, ptr);
+                    }
+                    //发送完毕了
+                    start = sending_tasks.erase(start); //摘掉
+                }
+                //计算剩余可用带宽
+                auto kv = sending_tasks.begin();
+                auto left_bytes = left_float_bytes - kv->first.get_left_bytes();
+                if ( left_bytes > 0){
+
+                }
+            }
+        }else{
+
+        }
+
+
     }
 
 
@@ -46,7 +79,7 @@ namespace muse::simulator {
     }
 
     network_card_task::network_card_task(message *msg,uint64_t _bytes, uint64_t _start_ms, uint64_t _end_ms)
-    :bytes(_bytes), start_ms(_start_ms), end_ms(_end_ms), msg(msg), float_bytes(0){
+    :bytes(_bytes), start_ms(_start_ms), end_ms(_end_ms), msg(msg){
 
     }
 
@@ -66,7 +99,19 @@ namespace muse::simulator {
         return this->bytes;
     }
 
-    auto network_card_task::get_float_bytes() const -> uint64_t {
-        return this->float_bytes;
+    auto network_card_task::get_left_bytes() const->uint64_t {
+        return this->bytes  - send_bytes;
     }
+
+    auto network_card_task::get_send_bytes() const -> uint64_t {
+        return this->send_bytes;
+    }
+
+    auto network_card_task::append_send_bytes(const uint64_t &_bytes) {
+        this->send_bytes += _bytes;
+    }
+
+//    auto network_card_task::get_float_bytes() const -> uint64_t {
+//        return this->float_bytes;
+//    }
 }

@@ -8,6 +8,12 @@
 #include <string>
 
 namespace muse::simulator{
+
+    enum class message_rpc_phase:uint8_t {
+        RPC_REQUEST = 0,
+        RPC_RESPONSE,
+    };
+
     struct SIMULATOR_CPP_WIN_API message{
         uint64_t cpu_ms{0};           //处理时间 ms
         std::string sender_ip;     //发送者 id
@@ -20,12 +26,15 @@ namespace muse::simulator{
 
         /* 当前RPC 请求是否完成发送 */
         bool rpc_client_is_finish_sending{false};
-        /* 当前RPC 请求是否完成接收 */
-        bool rpc_server_is_finish_sending{false};
-        /* 客户端回调是否已经触发 */
-        bool rpc_client_is_trigger{false};
+
         /* 服务端RPC函数是否已经触发 */
         bool rpc_server_is_trigger{false};
+
+        /* 当前RPC 请求是否完成接收 */
+        bool rpc_server_is_finish_sending{false};
+
+        /* 客户端回调是否已经触发 */
+        bool rpc_client_is_trigger{false};
 
         message();
 
@@ -36,6 +45,8 @@ namespace muse::simulator{
         message& operator=(const message& other) = delete;
 
         message& operator=(message&& other) noexcept;
+
+        [[nodiscard]] message_rpc_phase get_rpc_phase() const;
 
         virtual ~message();
     };

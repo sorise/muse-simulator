@@ -42,7 +42,12 @@ namespace muse::simulator {
         return *this;
     }
 
-    message::message() {
+    message::message() = default;
 
+    message_rpc_phase message::get_rpc_phase() const {
+        if (rpc_server_is_trigger){
+            return message_rpc_phase::RPC_RESPONSE;
+        }
+        return message_rpc_phase::RPC_REQUEST;
     }
 }
