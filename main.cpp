@@ -72,14 +72,19 @@ public:
 using namespace muse::simulator;
 
 int main() {
+    network_card nc(2621440ull); // 2.5MB/s = 10Mbps
 
-    network_card_task task1(100,5,15);
-    network_card_task task2(100,15,25);
-    network_card_task task3(120,18,25);
+    network_card_task task1(nullptr,100,5,15);
+    network_card_task task2(nullptr,100,15,25);
+    network_card_task task3(nullptr,120,18,25);
+    network_card_task task4(nullptr,120,18,75);
+
     std::map<network_card_task, bool> sending_tasks;
+
     sending_tasks.emplace(task1, true);
     sending_tasks.emplace(task2, true);
     sending_tasks.emplace(task3, true);
+    sending_tasks.emplace(task4, true);
 
     for (auto& [k,v]: sending_tasks) {
         fmt::print("{}:{}\n",k.get_start_ms(), k.get_end_ms());

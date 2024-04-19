@@ -147,6 +147,7 @@ add_library(simulator SHARED
         src/simulator/machines/simulator_timer.cpp
         src/simulator/machines/network_card.cpp
         src/simulator/machines/message.cpp
+        src/simulator/machines/simulator_net_event_queue.cpp
         src/utils/singleton.cpp
         include/serializer/binaryDeserializeView.cpp
         include/serializer/binarySerializer.cpp
