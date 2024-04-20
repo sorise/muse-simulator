@@ -14,13 +14,15 @@ namespace muse::simulator{
         return instance_->empty();
     }
 
-    auto simulator_net_event_queue::pop_event() -> simulator_event {
+    auto simulator_net_event_queue::pop_event(bool &success) -> simulator_event {
         std::unique_lock lock(mutex_);
         if (!instance_->empty()){
             simulator_event ev = instance_->front();
             instance_->pop();
+            success = true;
             return ev;
         }
-        throw std::runtime_error("event queue is empty");
+        success = false;
+        return {};
     }
 }

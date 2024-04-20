@@ -37,7 +37,7 @@ namespace muse::simulator {
         static auto is_empty() -> bool;
 
         //获取事件
-        static auto pop_event() -> simulator_event;
+        static auto pop_event(bool &success) -> simulator_event;
     };
 }
 

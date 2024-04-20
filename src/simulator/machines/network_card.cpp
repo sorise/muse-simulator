@@ -115,9 +115,7 @@ namespace muse::simulator {
             if (ptr->get_rpc_phase() == message_rpc_phase::RPC_RESPONSE){
                 ptr->rpc_server_is_finish_sending = true;
             }
-
             simulator_event ev{simulator_net_event_type::RPC_RESPONSE_FINISH, ptr};
-
             //加入到全局队列中
             simulator_net_event_queue::insert_event(ev);
             fmt::print("{} tick:{} add simulator_net_event_queue\n", __FUNCTION__, tick);
