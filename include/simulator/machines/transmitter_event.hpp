@@ -195,6 +195,7 @@ namespace muse::simulator {
         /* 决定调用哪个访问 */
         template<typename R, typename ...Argc>
         bool call(const std::string& Name, Argc&&...argc){
+            remote_process_name = Name;
             serializer.clear();
             if (!is_set_remote_func ) is_set_remote_func = true;
             std::tuple<Argc...> tpl(argc...);

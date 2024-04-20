@@ -24,11 +24,11 @@ namespace muse::simulator{
 
     ResponseData synchronous_registry::convert_result_to_response(BinarySerializer *serializer) {
         auto count = serializer->byteCount();
-        auto ptr = muse::chain::singleton_memory_pool::get_ptr()->allocate(count);
+        auto ptr = muse::simulator::singleton_memory_pool::get_ptr()->allocate(count);
 
         std::shared_ptr<char[]> rdt((char*)ptr, [total = count](char *ptr){
             fmt::print("release count {}", total);
-            muse::chain::singleton_memory_pool::get_ptr()->deallocate(ptr, total);
+            muse::simulator::singleton_memory_pool::get_ptr()->deallocate(ptr, total);
         });
 
         std::memcpy(rdt.get(),serializer->getBinaryStream(), serializer->byteCount());

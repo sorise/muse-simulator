@@ -5,10 +5,14 @@
 #include <assert.h>
 
 #include "simulator/machines/computer.hpp"
+#include "simulator/machines/message.hpp"
 #include "simulator/machines/host_delay_matrix.hpp"
 #include "simulator/machines/network_card.hpp"
 #include "simulator/machines/transmitter_event.hpp"
 #include "simulator/machines/synchronous_registry.hpp"
+#include "simulator/machines/cpu_processing_matrix.hpp"
+#include "simulator/machines/person.hpp"
+#include "simulator/machines/king.hpp"
 #include "simulator/network_dispatcher.hpp"
 #include "simulator/encryption/hash_handler.hpp"
 #include "simulator/encryption/ecc_secp256k1.hpp"
@@ -38,42 +42,39 @@ using namespace muse::timer;
 using namespace muse::pool;
 using namespace muse::chain;
 
-struct Person: public muse::serializer::IBinarySerializable{
-private:
-    mutable std::shared_mutex mtx;
-    int age{0};
-public:
-
-    explicit Person(const int& _age): age(_age){
-
-    }
-
-    MUSE_IBinarySerializable(age);
-
-    [[nodiscard]] int get_age() const{
-        std::shared_lock<std::shared_mutex> lock(this->mtx);
-        return age;
-    }
-
-    void set_age(const int& _age){
-        std::lock_guard<std::shared_mutex> lck(mtx);
-        this->age = _age;
-    }
-
-    virtual ~Person(){
-        fmt::print("Person destructor!\n");
-    }
-
-    Person(): mtx(){
-        fmt::print("Person create!\n");
-    }
-};
-
-
-using namespace muse::simulator;
-
 int main() {
-    HOST_DELAY_MATRIX::get_reference().initial(host_delay_type::Unified_Latency,15,30);
+    muse::simulator::singleton_lazy_heap<Person>::get_ptr()->set_age(10);
+
+    King k;
+    std::cout << k.get_person_age() << std::endl;
+
+
+//    HOST_DELAY_MATRIX::get_ptr()->initial(muse::simulator::host_delay_type::Unified_Latency,15,30);
+//    CPU_PROCESSING_MATRIX::get_ptr()->initial(1,12);
+//
+//    auto sin__ = muse::simulator::singleton_lazy_heap<muse::simulator::host_delay_matrix>::get_ptr();
+//
+//    muse::simulator::host me("159.56.17.52", 2621440ull, 3.5, 8);
+//
+//    auto* ev = muse::simulator::new_by_pool<muse::simulator::TransmitterEvent>("159.56.17.52", 2600);
+//    ev->call<int>("rpc::vote");
+//
+//    auto m1 = create_message_factory(&me, ev);
+//
+//    muse::simulator::network_card nc(2621440ull);
+//    nc.add_task(m1);
+//
+//    uint64_t tick = 0;
+//    while (tick < 50){
+//        nc.next_tick(tick);
+//        tick++;
+//    };
+//
+//    delete_message_factory(m1);
+
+    //nc.add_task()
+
+
 //    network_card nc(2621440ull); // 2.5MB/s = 10Mbps
 //
 //    network_card_task task1(nullptr,100,5,15);

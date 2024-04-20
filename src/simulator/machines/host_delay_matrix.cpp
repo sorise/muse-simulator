@@ -11,25 +11,29 @@ namespace muse::simulator{
 
     }
 
-    auto host_delay_matrix::initial(host_delay_type _type, const uint32_t& _unified_latency_down_ms, const uint32_t& _unified_latency_up_ms) -> bool {
+    auto host_delay_matrix::initial(host_delay_type _type, const uint32_t& _unified_latency_down_ms, const uint32_t& _unified_latency_up_ms) -> bool
+    {
         if (this->initial_state_){
             return false;
         }
         if (_unified_latency_down_ms > _unified_latency_up_ms){
             throw std::logic_error("The unified_latency_down_ms must be less than or equal to the unified_latency_up_ms");
         }
+        fmt::print("host_delay_matrix initial\n");
         this->initial_state_ = true;
         this->unified_latency_down_ms_ = _unified_latency_down_ms;
         this->unified_latency_up_ms_ = _unified_latency_up_ms;
         this->type_ = _type;
         this->down_equal_up_ = (_unified_latency_down_ms == _unified_latency_up_ms);
+
         if(this->type_ == host_delay_type::Different_Latency){
             this->latency_map_ = std::make_unique<Latency_Map_Type>();
         }
         return true;
     }
 
-    auto host_delay_matrix::get_delay(const std::string& host_a_ip_address, const std::string& host_b_ip_address) -> uint32_t {
+    auto host_delay_matrix::get_delay(const std::string& host_a_ip_address, const std::string& host_b_ip_address) -> uint32_t
+    {
         if (!this->initial_state_){
             throw std::logic_error("The host_delay_matrix has not yet been initialized by calling the initial method");
         };
@@ -59,8 +63,11 @@ namespace muse::simulator{
         return this->unified_latency_up_ms_;
     }
 
-    auto host_delay_matrix::set_host_delay(const std::string& host_a_ip_address, const std::string& host_b_ip_address,
-                                           const uint32_t &_delay_down_ms, const uint32_t &_delay_up_ms) -> void {
+    auto host_delay_matrix::set_host_delay(const std::string& host_a_ip_address, const std::string& host_b_ip_address, const uint32_t &_delay_down_ms, const uint32_t &_delay_up_ms) -> void
+    {
+        if (!this->initial_state_){
+            throw std::logic_error("The host_delay_matrix has not yet been initialized by calling the initial method");
+        };
         std::string key = host_a_ip_address + ":" + host_b_ip_address;
         if (_delay_down_ms > _delay_up_ms){
             throw std::logic_error("The _delay_down_ms must be less than or equal to the _delay_up_ms");

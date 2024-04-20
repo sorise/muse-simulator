@@ -6,8 +6,8 @@ namespace muse::simulator {
 
 
     message::message(message &&other) noexcept
-    :rpc_client_event(other.rpc_client_event),
-    rpc_server_response(other.rpc_server_response),
+    :request(other.request),
+    response(other.response),
     cpu_ms(other.cpu_ms),
     sender_ip(std::move(other.sender_ip)),
     acceptor_id(std::move(other.acceptor_id)),
@@ -20,9 +20,7 @@ namespace muse::simulator {
 
     }
 
-    message::~message() {
-
-    }
+    message::~message() = default;
 
     message &message::operator=(message &&other) noexcept {
         if (this != &other){
@@ -30,10 +28,10 @@ namespace muse::simulator {
             sender_ip = std::move(other.sender_ip);
             acceptor_id = std::move(other.acceptor_id);
             bytes = other.bytes;
-            rpc_client_event = other.rpc_client_event;
-            other.rpc_client_event = nullptr;
-            rpc_server_response = other.rpc_server_response;
-            other.rpc_server_response = nullptr;
+            request = other.request;
+            other.request = nullptr;
+            response = other.response;
+            other.response = nullptr;
             rpc_client_is_finish_sending = other.rpc_client_is_finish_sending;
             rpc_server_is_finish_sending = other.rpc_server_is_finish_sending;
             rpc_server_is_trigger = other.rpc_server_is_trigger;
@@ -45,9 +43,25 @@ namespace muse::simulator {
     message::message() = default;
 
     message_rpc_phase message::get_rpc_phase() const {
-        if (rpc_server_is_trigger){
+        if (rpc_server_is_trigger && !rpc_client_is_trigger){
             return message_rpc_phase::RPC_RESPONSE;
+        }
+        if (rpc_client_is_trigger){
+            return message_rpc_phase::RPC_FINISH;
         }
         return message_rpc_phase::RPC_REQUEST;
     }
+
+    uint64_t message::get_message_bytes() const {
+        if (get_rpc_phase() == message_rpc_phase::RPC_REQUEST){
+            if (request != nullptr){
+                return request->get_serializer().byteCount();
+            }
+        }else if (get_rpc_phase() == message_rpc_phase::RPC_RESPONSE){
+            if (response != nullptr){
+                return response->getSize();
+            }
+        }
+        return 0;
+    };
 }

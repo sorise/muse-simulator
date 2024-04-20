@@ -1,7 +1,3 @@
-//
-// Created by 14270 on 2024-04-07.
-//
-
 #ifndef MUSE_SIMULATOR_SINGLETON_HPP
 #define MUSE_SIMULATOR_SINGLETON_HPP
 
@@ -12,7 +8,7 @@
 #include <fmt/format.h>
 #include "utils/toolkits.hpp"
 
-namespace muse::chain {
+namespace muse::simulator {
     /*
      * 单例饿汉模式： 天生就是线程安全的, 内存分配在heap,返回的是指针
      * 但是不能保证对T本身操作是线程安全的！
@@ -22,11 +18,11 @@ namespace muse::chain {
     class singleton_hungry_heap {
     public:
         static T* get_ptr(){
-            return instance_.get();
+            return singleton_hungry_heap::instance_.get();
         }
 
         static T& get_reference(){
-            return *instance_;
+            return *(singleton_hungry_heap::instance_.get());
         }
     private:
         singleton_hungry_heap() = default;
@@ -75,30 +71,32 @@ namespace muse::chain {
         ~singleton_lazy_heap()= default;
     public:
         static T* get_ptr(){
-            std::call_once(_flag, init);
+            std::call_once(singleton_lazy_heap<T>::_flag, singleton_lazy_heap<T>::init);
             return instance_.get();
         }
 
         static T& get_reference(){
-            std::call_once(_flag, init);
-            return *instance_;
+            std::call_once(singleton_lazy_heap<T>::_flag, singleton_lazy_heap<T>::init);
+            return *(instance_.get());
         }
     private:
         static void init(){
-            instance_ = std::unique_ptr<T>(new T());
+            singleton_lazy_heap::instance_ = std::unique_ptr<T>(new T());
         }
 
         static std::once_flag _flag;
+
         static  std::unique_ptr<T> instance_;
     };
 
     template<typename T>
     std::once_flag singleton_lazy_heap<T>::_flag = std::once_flag();
+
     template<typename T>
     std::unique_ptr<T> singleton_lazy_heap<T>::instance_ = nullptr;
 
 
-    template<> class singleton_lazy_heap<std::pmr::synchronized_pool_resource>{
+    template<> class SIMULATOR_CPP_WIN_API singleton_lazy_heap<std::pmr::synchronized_pool_resource>{
     private:
         singleton_lazy_heap() = default;
         singleton_lazy_heap(const singleton_lazy_heap&) = default;
@@ -112,7 +110,7 @@ namespace muse::chain {
 
         static std::pmr::synchronized_pool_resource& get_reference(){
             std::call_once(_flag, init);
-            return *instance_;
+            return *(instance_);
         }
     private:
         static void init(){
@@ -127,6 +125,26 @@ namespace muse::chain {
     };
 
     using singleton_memory_pool = singleton_lazy_heap<std::pmr::synchronized_pool_resource>;
+
+    template<typename T, typename ...Args>
+    auto new_by_pool(Args&&... args) ->T*{
+        static_assert(std::is_destructible<T>());
+        void * place = singleton_memory_pool::get_ptr()->allocate(sizeof(T));
+        T* real = new(place) T(std::forward<Args>(args)...);
+        //SPDLOG_INFO("address {:p}, allocate sizeof(T) :{}",  static_cast<void*>(real), sizeof(T));
+        return real;
+    }
+
+    template<typename T>
+    auto delete_by_pool(T *ptr) ->void{
+        static_assert(std::is_destructible<T>());
+        ptr->~T();
+        auto sin_ptr = singleton_memory_pool::get_ptr();
+        if (sin_ptr!= nullptr){
+            //SPDLOG_WARN("address {:p}, deallocate sizeof(T) :{}",  static_cast<void*>(ptr), sizeof(T));
+            sin_ptr->deallocate(ptr, sizeof(T));
+        }
+    }
 }
 
 #endif //MUSE_SIMULATOR_SINGLETON_HPP

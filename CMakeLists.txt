@@ -100,14 +100,24 @@ include_directories(${muse_timer_SOURCE_DIR}/include)
 include_directories(${fmt_SOURCE_DIR}/include)
 include_directories(${secp256k1_SOURCE_DIR}/include)
 include_directories(${OpenSSL_Include_Directory})
-
 # include
 include_directories(include)
 
 MESSAGE(STATUS "${OpenSSL_Library_Directory}")
+MESSAGE(STATUS "${OpenSSL_Link_Directory}")
 
-find_library(openssl_Find_Result ${OpenSSL_LIB_NAME_SSL}  VERSION 3 REQUIRED)
-find_library(crypto_Find_Result ${OpenSSL_LIB_NAME_CRYPTO} VERSION 3 REQUIRED)
+# 库文件目录 >>
+link_directories("${OpenSSL_Link_Directory}")
+link_directories("${OpenSSL_Library_Directory}")
+link_directories("${LevelDB_Link_Directory}")
+
+find_library(openssl_Find_Result ${OpenSSL_LIB_NAME_SSL}
+        REQUIRED
+)
+
+find_library(crypto_Find_Result ${OpenSSL_LIB_NAME_CRYPTO}
+        REQUIRED
+)
 
 #openssl 不在就G
 if (openssl_Find_Result)
@@ -123,13 +133,9 @@ else ()
     MESSAGE(FATAL_ERROR "-- didn't find openssl-crypto ----- ERROR!")
 endif ()
 
-# 库文件 >>
-link_directories("${OpenSSL_Link_Directory}")
-link_directories("${OpenSSL_Library_Directory}")
+
 
 add_library(simulator SHARED
-        src/simulator/machines/computer.cpp
-        src/simulator/machines/host.cpp
         src/simulator/db/block.cpp
         src/simulator/encryption/bitcoin_secp256k1.cpp
         src/simulator/encryption/ecc_secp256k1.cpp
@@ -140,14 +146,18 @@ add_library(simulator SHARED
         src/simulator/simulator.cpp
         src/simulator/network_dispatcher.cpp
         src/simulator/consensus/stack_calculator.cpp
+        src/simulator/machines/computer.cpp
+        src/simulator/machines/host.cpp
+        src/simulator/machines/message.cpp
         src/simulator/machines/response_data.cpp
         src/simulator/machines/rpc_response_header.cpp
         src/simulator/machines/transmitter_event.cpp
         src/simulator/machines/synchronous_registry.cpp
         src/simulator/machines/simulator_timer.cpp
         src/simulator/machines/host_delay_matrix.cpp
+        src/simulator/machines/network_card_task.cpp
         src/simulator/machines/network_card.cpp
-        src/simulator/machines/message.cpp
+        src/simulator/machines/cpu_processing_matrix.cpp
         src/simulator/machines/simulator_net_event_queue.cpp
         src/utils/singleton.cpp
         include/serializer/binaryDeserializeView.cpp

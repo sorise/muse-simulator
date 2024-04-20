@@ -2,6 +2,7 @@
 #define MUSE_SIMULATOR_HOST_DELAY_MATRIX_HPP
 
 #include "utils/singleton.hpp"
+#include "utils/toolkits.hpp"
 #include <random>
 #include <ctime>
 #include <unordered_map>
@@ -22,7 +23,7 @@ namespace muse::simulator {
      * 时延矩阵，记录任意两个主机之间的时延。
      * 单例模式时延
      * */
-    class host_delay_matrix {
+    class SIMULATOR_CPP_WIN_API host_delay_matrix {
     public:
         using Latency_Map_Type = std::unordered_map<std::string, std::tuple<uint32_t,uint32_t,bool>>;
     private:
@@ -31,6 +32,7 @@ namespace muse::simulator {
         uint32_t unified_latency_down_ms_; //统一时延下界
         uint32_t unified_latency_up_ms_; //统一时延上界
         bool down_equal_up_;
+
         std::unique_ptr<Latency_Map_Type> latency_map_;
     public:
 
@@ -45,7 +47,9 @@ namespace muse::simulator {
         static auto get_random_number(const uint32_t& _down, const uint32_t& _up) -> uint32_t;
     };
 
-    using HOST_DELAY_MATRIX = muse::chain::singleton_lazy_heap<host_delay_matrix>;
+    template class SIMULATOR_CPP_WIN_API muse::simulator::singleton_lazy_heap<muse::simulator::host_delay_matrix>;
+
+    #define HOST_DELAY_MATRIX muse::simulator::singleton_lazy_heap<muse::simulator::host_delay_matrix>
 }
 
 #endif //MUSE_SIMULATOR_HOST_DELAY_MATRIX_HPP
