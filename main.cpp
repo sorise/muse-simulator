@@ -5,6 +5,7 @@
 #include <assert.h>
 
 #include "simulator/machines/computer.hpp"
+#include "simulator/machines/central_processing_unit.hpp"
 #include "simulator/machines/message.hpp"
 #include "simulator/machines/host_delay_matrix.hpp"
 #include "simulator/machines/network_card.hpp"
@@ -45,19 +46,8 @@ using namespace muse::chain;
 
 int main() {
     //muse::simulator::central_processing_unit cpu(8);
-    std::priority_queue <uint64_t,std::vector<uint64_t>, std::greater<>> vals;
-
-    for (int i = 0; i < 10; ++i) {
-        vals.push(10);
-    }
-    vals.push(8);
-    vals.push(9);
-
-    fmt::print("{}\n", vals.top());
-    vals.pop();
-    vals.push(12);
-    vals.pop();
-    fmt::print("{}\n", vals.top());
+    muse::simulator::central_processing_unit cpu(8);
+    cpu.print_core_state(1);
 
 
     /*
