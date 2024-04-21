@@ -159,6 +159,7 @@ add_library(simulator SHARED
         src/simulator/machines/network_card.cpp
         src/simulator/machines/cpu_processing_matrix.cpp
         src/simulator/machines/simulator_net_event_queue.cpp
+        src/simulator/machines/central_processing_unit.cpp
         src/utils/singleton.cpp
         include/serializer/binaryDeserializeView.cpp
         include/serializer/binarySerializer.cpp

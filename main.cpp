@@ -11,6 +11,7 @@
 #include "simulator/machines/transmitter_event.hpp"
 #include "simulator/machines/synchronous_registry.hpp"
 #include "simulator/machines/cpu_processing_matrix.hpp"
+#include "simulator/machines/central_processing_unit.hpp"
 
 #include "simulator/network_dispatcher.hpp"
 #include "simulator/encryption/hash_handler.hpp"
@@ -33,6 +34,7 @@
 #include <secp256k1_ecdh.h>
 
 #include <openssl/rand.h>
+#include <queue>
 #include "utils/singleton.hpp"
 #include "serializer/binarySerializer.h"
 #include "serializer/IbinarySerializable.h"
@@ -42,61 +44,28 @@ using namespace muse::pool;
 using namespace muse::chain;
 
 int main() {
+    //muse::simulator::central_processing_unit cpu(8);
+    std::priority_queue <uint64_t,std::vector<uint64_t>, std::greater<>> vals;
 
-    HOST_DELAY_MATRIX::get_ptr()->initial(muse::simulator::host_delay_type::Unified_Latency,15,30);
-    CPU_PROCESSING_MATRIX::get_ptr()->initial(1,12);
-
-    auto sin__ = muse::simulator::singleton_lazy_heap<muse::simulator::host_delay_matrix>::get_ptr();
-
-
-    muse::simulator::host me("159.56.17.52", 2621440ull, 3.5, 8);
-    muse::simulator::host other("159.56.17.53", 262144ull, 3.5, 8);
-
-
-    auto* ev = muse::simulator::new_by_pool<muse::simulator::TransmitterEvent>("159.56.17.52", 2600);
-    ev->call<int>("rpc::vote",150,500,std::string("i wanna fuck you father today!"));
-    ev->set_callBack([](muse::simulator::Outcome<int> outcome){
-        if (outcome.isOK()){
-
-        }
-    });
-
-    auto* ev2 = muse::simulator::new_by_pool<muse::simulator::TransmitterEvent>("159.56.17.52", 2600);
-    ev2->call<int>("rpc::vote",150,500,std::string("i wanna fuck you father today!"));
-
-    auto m1 = create_message_factory(&me, ev);
-    auto m2 = create_message_factory(&other, ev2);
-
-    muse::simulator::network_card nc(2621440ull);
-
-
-    nc.add_task(m1);
-    nc.add_task(m2);
-
-    uint64_t tick = 0;
-
-    while (tick < 50){
-        nc.next_tick(tick);
-        tick++;
-    };
-
-    bool success = true;
-    muse::simulator::simulator_event s_event = muse::simulator::simulator_net_event_queue::pop_event(success);
-    while (success){
-        if (s_event.event_type_ == muse::simulator::simulator_net_event_type::RPC_REQUEST_FINISH){
-
-        }else if(s_event.event_type_ == muse::simulator::simulator_net_event_type::RPC_RESPONSE_FINISH){
-
-        }else{
-
-        }
-        s_event = muse::simulator::simulator_net_event_queue::pop_event(success);
+    for (int i = 0; i < 10; ++i) {
+        vals.push(10);
     }
+    vals.push(8);
+    vals.push(9);
+
+    fmt::print("{}\n", vals.top());
+    vals.pop();
+    vals.push(12);
+    vals.pop();
+    fmt::print("{}\n", vals.top());
 
 
+    /*
+    HOST_DELAY_MATRIX::get_ptr()->initial(muse::simulator::host_delay_type::Unified_Latency,10,30);
+    CPU_PROCESSING_MATRIX::get_ptr()->initial(1,12);
+    */
 
-    delete_message_factory(m1);
-    delete_message_factory(m2);
+
 
     //nc.add_task()
 
