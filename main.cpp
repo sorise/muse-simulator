@@ -55,8 +55,6 @@ int main() {
     CPU_PROCESSING_MATRIX::get_ptr()->initial(1,12);
     */
 
-
-
     //nc.add_task()
 
 

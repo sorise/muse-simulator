@@ -27,5 +27,9 @@ namespace muse::simulator {
         }
     }
 
+    bool central_processing_unit::carry_on_core(const uint64_t &tick, uint64_t &runtime) {
+        return false;
+    }
+
 
 }

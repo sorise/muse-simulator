@@ -17,11 +17,13 @@ namespace muse::simulator {
         /* 多少个核心 n核2n线程 */
         uint32_t core_num_;
         uint32_t thread_max_run_;
-        std::vector<uint64_t> core_load_;
+        std::vector<uint64_t> core_load_; //ns
     public:
         explicit central_processing_unit(const uint32_t& _core_num);
 
         int32_t get_spare_core(const uint64_t& tick);
+
+        bool carry_on_core(const uint64_t& tick, uint64_t &runtime);
 
         void print_core_state(const uint64_t &tick);
 
