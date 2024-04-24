@@ -3,11 +3,12 @@
 
 #include "utils/singleton.hpp"
 #include "utils/toolkits.hpp"
+#include <condition_variable>
 #include <iostream>
 #include <queue>
+#include <mutex>
 
 namespace muse::simulator {
-
     /*
      * @author: jx.kicker QQ: 1427035242 email: jxkicker@163.com
      * @des: 模拟主机的CPU
@@ -21,11 +22,12 @@ namespace muse::simulator {
     public:
         explicit central_processing_unit(const uint32_t& _core_num);
 
-        int32_t get_spare_core(const uint64_t& tick);
+        int32_t get_spare_core(const uint64_t& us_tick);
 
-        bool carry_on_core(const uint64_t& tick, uint64_t &runtime);
+        bool carry_on_core(const uint64_t& tick, const uint64_t &_us_);
 
-        void print_core_state(const uint64_t &tick);
+        /* 毫秒 */
+        void print_core_state(const uint64_t &ms_tick);
 
         ~central_processing_unit() = default;
     };

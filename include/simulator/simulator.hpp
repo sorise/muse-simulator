@@ -4,20 +4,25 @@
 
 #ifndef MUSE_SIMULATOR_SIMULATOR_HPP
 #define MUSE_SIMULATOR_SIMULATOR_HPP
+
 #include <cstdint>
-#include "network_dispatcher.hpp"
-#include "../utils/toolkits.hpp"
+#include "simulator_object.hpp"
+#include "fmt/format.h"
 
 namespace muse::simulator{
-    class SIMULATOR_CPP_WIN_API simulator {
+    class SIMULATOR_CPP_WIN_API simulator: public simulator_object {
     private:
-        uint64_t tick;
+        void initialize_simulator() override;
 
-        network_dispatcher dispatcher;
+        void simulator_operating_core() override;
+
+        bool stop_simulator_condition() override;
+
+        void simulator_report() override;
     public:
-        simulator();
-        //运行实验
-        auto run() -> void;
+        simulator() = default;
+
+        ~simulator() override;
     };
 }
 

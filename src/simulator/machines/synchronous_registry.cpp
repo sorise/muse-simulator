@@ -8,14 +8,14 @@ namespace muse::simulator{
 
     void synchronous_registry::runSafely(const std::string &name, BinarySerializer *serializer) {
         if (check(name)){
-            host caller;
-            concurrent_dictionary[name]->func(&caller, serializer);
+            host *caller = MUSE_NETWORK_DISPATCHER::get_ptr()->get_host(name);
+            concurrent_dictionary[name]->func(caller, serializer);
         }
     }
 
     void synchronous_registry::runEnsured(const std::string &name, BinarySerializer *serializer) {
-        host caller;
-        concurrent_dictionary[name]->func(&caller, serializer);
+        host *caller = MUSE_NETWORK_DISPATCHER::get_ptr()->get_host(name);
+        concurrent_dictionary[name]->func(caller, serializer);
     }
 
     bool synchronous_registry::check(const std::string &name) {
@@ -38,7 +38,6 @@ namespace muse::simulator{
         responseData.set_success(true);
         responseData.isSuccess = true;
         responseData.total_size = count;
-
         return responseData;
     }
 }

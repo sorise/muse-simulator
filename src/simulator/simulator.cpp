@@ -1,11 +1,22 @@
 #include "simulator/simulator.hpp"
 
 namespace muse::simulator{
-    auto simulator::run() -> void {
+
+    simulator::~simulator() = default;
+
+    void simulator::initialize_simulator() {
 
     }
 
-    simulator::simulator(): tick(0) {
+    void simulator::simulator_operating_core() {
 
+    }
+
+    bool simulator::stop_simulator_condition() {
+        return true;
+    }
+
+    void simulator::simulator_report() {
+        fmt::println("simulator report");
     }
 }

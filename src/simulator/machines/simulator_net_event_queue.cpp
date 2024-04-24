@@ -25,4 +25,16 @@ namespace muse::simulator{
         success = false;
         return {};
     }
+
+    auto simulator_net_event_queue::reset() -> void {
+        std::unique_lock lock(mutex_);
+        for(;!instance_->empty();){
+            auto& ev = instance_->front();
+            //回收message
+            delete_message_factory(ev.message_);
+            ev.message_ = nullptr;
+            instance_->pop();
+        }
+
+    }
 }

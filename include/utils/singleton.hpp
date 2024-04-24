@@ -2,6 +2,8 @@
 #define MUSE_SIMULATOR_SINGLETON_HPP
 
 #include <memory>
+#include <mutex>
+#include <shared_mutex>
 #include <iostream>
 #include <exception>
 #include <memory_resource>

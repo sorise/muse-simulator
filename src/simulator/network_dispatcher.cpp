@@ -14,19 +14,18 @@ namespace muse::simulator {
         return false;
     }
 
-    bool network_dispatcher::RPC_Request(host *caller, TransmitterEvent &&event) {
-        std::shared_lock lock(this->mtx);
-        //先得到有这个主机和方法
-        if (this->hosts.find(event.get_ip_address()) == this->hosts.end()){
-            return false;
+    network_dispatcher::~network_dispatcher() {
+        for(auto &[k,host] : this->hosts){
+            delete_by_pool(host);
         }
-
-        //存储这个msg 等待传输完成，再执行回调
-        //为了方便查找，需要添加一个map
-
-        return true;
-
-
     }
 
+    host *network_dispatcher::get_host(const std::string &ip_or_and_port) {
+        std::unique_lock lock(this->mtx);
+        if (this->hosts.find(ip_or_and_port) != this->hosts.end()){
+            return this->hosts[ip_or_and_port];
+        }
+        lock.unlock();
+        return nullptr;
+    }
 }

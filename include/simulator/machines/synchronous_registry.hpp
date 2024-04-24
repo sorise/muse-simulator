@@ -2,6 +2,7 @@
 #define MUSE_SIMULATOR_SYNCHRONOUS_REGISTRY_HPP
 #include <iostream>
 #include <unordered_map>
+
 #include "serializer/binarySerializer.h"
 #include "rpc_response_header.hpp"
 #include <tuple>
@@ -11,7 +12,7 @@
 #include <functional>
 #include "response_data.hpp"
 #include "host.hpp"
-#include "utils/singleton.hpp"
+#include "../network_dispatcher.hpp"
 
 using namespace muse::serializer;
 

@@ -2,13 +2,15 @@
 #define MUSE_SIMULATOR_TRANSMITTER_EVENT_HPP
 #include <unordered_map>
 #include <iostream>
-#include "thread_pool/pool.hpp"
-#include "serializer/binarySerializer.h"
 #include <utility>
 #include <bitset>
+
+#include "thread_pool/pool.hpp"
+#include "serializer/binarySerializer.h"
 #include "outcome.hpp"
 #include "response_data.hpp"
 #include "utils/toolkits.hpp"
+#include "fmt/format.h"
 
 namespace muse::simulator {
     /* 包装一个发送任务 */

@@ -38,6 +38,9 @@ namespace muse::simulator {
 
         //获取事件
         static auto pop_event(bool &success) -> simulator_event;
+
+        //重置时间队列
+        static auto reset() -> void;
     };
 }
 

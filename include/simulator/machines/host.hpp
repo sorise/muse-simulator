@@ -14,6 +14,7 @@ namespace muse::simulator{
         //执行网络传输
     public:
         host();
+
         host(std::string ip_address, const uint64_t& memory_size, const double& cpu_frequency, const uint64_t& cpu_core_number);
         //行为
         auto vote() -> int;

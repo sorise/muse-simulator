@@ -54,3 +54,34 @@ while (success){
 delete_message_factory(m1);
 delete_message_factory(m2);
 ```
+
+
+### CPU Processing
+
+```cpp
+muse::simulator::central_processing_unit cpu(4);
+
+for (int i = 0; i < 100; ++i) {
+    bool t1 = cpu.carry_on_core(i, 1100ull);
+    bool t2 =  cpu.carry_on_core(i, 1200ull);
+    bool t3 =cpu.carry_on_core(i, 1300ull);
+    bool t4 =cpu.carry_on_core(i, 1200ull);
+
+    if (!t1){
+        printf("add task 1 failed!\n");
+    }
+    if (!t2){
+        printf("add task 2 failed!\n");
+    }
+    if (!t3){
+        printf("add task 3 failed!\n");
+    }
+    if (!t4){
+        printf("add task 4 failed!\n");
+    }
+
+    cpu.print_core_state(i);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    printf("------------------------------------------------\n");
+}
+```
