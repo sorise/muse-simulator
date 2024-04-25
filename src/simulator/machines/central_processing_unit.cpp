@@ -46,4 +46,23 @@ namespace muse::simulator {
         }
         return false;
     }
+
+    central_processing_unit::central_processing_unit(central_processing_unit &&_cpu) noexcept
+    :core_num_(_cpu.core_num_),
+    thread_max_run_(_cpu.thread_max_run_),
+    core_load_(std::move(_cpu.core_load_)){
+
+    }
+
+    central_processing_unit &central_processing_unit::operator=(central_processing_unit &&_cpu) noexcept {
+        if (this != &_cpu){
+            this->core_num_ = _cpu.core_num_;
+            this->thread_max_run_ = _cpu.thread_max_run_;
+            this->core_load_ = std::move(_cpu.core_load_);
+            _cpu.core_num_ = 0;
+            _cpu.thread_max_run_ = 0;
+            _cpu.core_load_.clear();
+        }
+        return *this;
+    }
 }

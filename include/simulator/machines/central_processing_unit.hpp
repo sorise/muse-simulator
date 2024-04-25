@@ -3,6 +3,7 @@
 
 #include "utils/singleton.hpp"
 #include "utils/toolkits.hpp"
+
 #include <condition_variable>
 #include <iostream>
 #include <queue>
@@ -21,6 +22,14 @@ namespace muse::simulator {
         std::vector<uint64_t> core_load_; //ns
     public:
         explicit central_processing_unit(const uint32_t& _core_num);
+
+        central_processing_unit(const central_processing_unit &_cpu) = delete;
+
+        central_processing_unit(central_processing_unit &&_cpu) noexcept;
+
+        central_processing_unit& operator=(const central_processing_unit &_cpu) = delete;
+
+        central_processing_unit& operator=(central_processing_unit &&_cpu) noexcept;
 
         int32_t get_spare_core(const uint64_t& us_tick);
 

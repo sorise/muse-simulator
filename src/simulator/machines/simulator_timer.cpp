@@ -2,7 +2,7 @@
 
 namespace muse::simulator {
 
-    auto simulator_timer::next() -> void {
+    auto simulator_timer::next_tick() -> void {
         tick.fetch_add(1);
     }
 }

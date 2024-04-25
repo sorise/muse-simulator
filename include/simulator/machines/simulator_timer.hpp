@@ -12,7 +12,9 @@ namespace muse::simulator {
     private:
         std::atomic<uint64_t> tick;
     public:
-        auto next() -> void ;
+        auto next_tick() -> void;
+
+
     };
 }
 

@@ -25,11 +25,17 @@ namespace muse::simulator {
         std::map<uint64_t ,message*, std::less<>> latency_tasks_set;
 
         uint64_t real_tick_{0};
-
-        uint64_t last_update_ms_{0};
     public:
-
         explicit network_card(const uint64_t& band_width);
+
+        network_card(const network_card&other) = delete;
+
+        network_card(network_card&&other) noexcept;
+
+        network_card& operator=(const network_card&other) = delete;
+
+        network_card& operator=(network_card&&other) noexcept;
+
         /*
          * todo 需要提高性能的时候再考虑多线程问题
          * 下一个时间点
@@ -39,8 +45,6 @@ namespace muse::simulator {
         auto next_tick(const uint64_t& tick) -> void;
 
         bool add_task(message* msg);
-
-        bool get_leftover_task();
     };
 }
 

@@ -36,17 +36,6 @@ namespace muse::simulator {
         return true;
     }
 
-    bool network_card::get_leftover_task() {
-        if (sending_tasks.empty()){
-            return this->band_width_;
-        }
-        uint64_t used_band_width = 0;
-//        std::for_each(sending_tasks.begin(), sending_tasks.end(), [&used_band_width](const std::pair<network_card_task, message*>& kv){
-//            used_band_width += kv.first.get_float_bytes();
-//        });
-        return this->band_width_ - used_band_width;
-    }
-
     auto network_card::next_tick(const uint64_t& tick) -> void {
         this->real_tick_ = tick;
         //判断是否有任务等待发送
@@ -60,11 +49,10 @@ namespace muse::simulator {
                     message* ptr = start->get_message();
                     //如果再请求阶段，需要服务器触发事件
                     if (ptr->get_rpc_phase() == message_rpc_phase::RPC_REQUEST){
-                        auto ht = HOST_DELAY_MATRIX::get_ptr();
-                        auto random_delay = ht->get_delay(ptr->sender_ip, ptr->acceptor_id);
+                        auto random_delay = HOST_DELAY_MATRIX::get_ptr()->get_delay(ptr->sender_ip, ptr->acceptor_id);
                         auto delay = tick + random_delay;
                         start->set_end_ms(delay);
-                        latency_tasks_set.emplace(delay, ptr);
+                        this->latency_tasks_set.emplace(delay, ptr);
                     }
                     //发送完毕了
                     start = sending_tasks.erase(start); //摘掉
@@ -105,8 +93,8 @@ namespace muse::simulator {
             }
         }
         //处理 latency_tasks_set
-        auto it = latency_tasks_set.begin();
-        while (it != latency_tasks_set.end() && it->first <= tick){
+        auto it = this->latency_tasks_set.begin();
+        while (it != this->latency_tasks_set.end() && it->first <= tick){
             auto ptr = it->second;
 
             if (ptr->get_rpc_phase() == message_rpc_phase::RPC_REQUEST){
@@ -119,8 +107,29 @@ namespace muse::simulator {
             //加入到全局队列中
             simulator_net_event_queue::insert_event(ev);
             fmt::print("{} tick:{} add simulator_net_event_queue\n", __FUNCTION__, tick);
-            it = latency_tasks_set.erase(it);
+            it = this->latency_tasks_set.erase(it);
         }
     }
 
+    network_card::network_card(network_card &&other) noexcept
+    :real_tick_(other.real_tick_),
+    band_width_(other.band_width_),
+    band_width_current_ms_(other.band_width_current_ms_),
+    sending_tasks(std::move(other.sending_tasks)),
+    waiting_tasks(std::move(other.waiting_tasks)),
+    latency_tasks_set(std::move(other.latency_tasks_set)){
+
+    }
+
+    network_card &network_card::operator=(network_card &&other) noexcept {
+        if (this != &other){
+            this->real_tick_ = other.real_tick_;
+            this->band_width_ = other.band_width_;
+            this->band_width_current_ms_ = other.band_width_current_ms_;
+            this->sending_tasks = std::move(other.sending_tasks);
+            this->waiting_tasks = std::move(other.waiting_tasks);
+            this->latency_tasks_set = std::move(other.latency_tasks_set);
+        }
+        return *this;
+    }
 }

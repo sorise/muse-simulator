@@ -1,11 +1,12 @@
-//
-// Created by remix on 24-3-26.
-//
-
 #ifndef MUSE_SIMULATOR_COMPUTER_HPP
 #define MUSE_SIMULATOR_COMPUTER_HPP
+
 #include "fmt/format.h"
+#include "network_card.hpp"
 #include "utils/toolkits.hpp"
+#include "central_processing_unit.hpp"
+#include "transmitter_event.hpp"
+
 #include <iostream>
 #include <cstdint>
 
@@ -19,16 +20,23 @@ namespace muse::simulator{
         double _cpu_frequency; //hz cpu频率
 
         uint64_t _cpu_core_number; //核心数量
+
+        uint64_t band_width_; //带宽
+
+        central_processing_unit cpu_;
+
+        network_card network_card_;
     public:
         computer();
 
-        computer(std::string ip_address, const uint64_t& memory_size, const double& cpu_frequency, const uint64_t& cpu_core_number);
+        computer(std::string ip_address, const uint64_t& memory_size, const double& cpu_frequency, const uint64_t& cpu_core_number, const uint64_t& _band_width);
+
+        computer(const computer& other) = delete;
+
+        computer(computer&& other) noexcept ;
 
         ~computer() = default;
 
-        computer(const computer& other) = default;
-
-        computer(computer&& other) noexcept ;
         /* 单位为 字节 */
         auto set_memory_size(const uint64_t& memory_size) -> void;
         /* 单位为 GHZ */
@@ -47,6 +55,10 @@ namespace muse::simulator{
         [[nodiscard]] auto get_cpu_frequency() const -> double;
 
         [[nodiscard]] auto get_cpu_core_number() const -> uint64_t;
+
+        void RPC(TransmitterEvent* event);
+
+        void next_tick(const uint64_t& ms_tick);
 
     };
 }

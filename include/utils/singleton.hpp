@@ -132,8 +132,10 @@ namespace muse::simulator {
     auto new_by_pool(Args&&... args) ->T*{
         static_assert(std::is_destructible<T>());
         void * place = singleton_memory_pool::get_ptr()->allocate(sizeof(T));
-        T* real = new(place) T(std::forward<Args>(args)...);
-        //SPDLOG_INFO("address {:p}, allocate sizeof(T) :{}",  static_cast<void*>(real), sizeof(T));
+        if (place == nullptr){
+            return nullptr;
+        }
+        T* real = new(place) T(std::forward<Args>(args)...); //定位 new
         return real;
     }
 
@@ -143,7 +145,6 @@ namespace muse::simulator {
         ptr->~T();
         auto sin_ptr = singleton_memory_pool::get_ptr();
         if (sin_ptr!= nullptr){
-            //SPDLOG_WARN("address {:p}, deallocate sizeof(T) :{}",  static_cast<void*>(ptr), sizeof(T));
             sin_ptr->deallocate(ptr, sizeof(T));
         }
     }

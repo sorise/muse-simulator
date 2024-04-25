@@ -5,6 +5,8 @@
 #include "computer.hpp"
 
 namespace muse::simulator{
+    
+
     //定义任务
     class SIMULATOR_CPP_WIN_API host : public muse::simulator::computer{
         /* 需要有状态存储 */
@@ -15,7 +17,7 @@ namespace muse::simulator{
     public:
         host();
 
-        host(std::string ip_address, const uint64_t& memory_size, const double& cpu_frequency, const uint64_t& cpu_core_number);
+        host(std::string ip_address, const uint64_t& memory_size, const double& cpu_frequency, const uint64_t& cpu_core_number, const uint64_t& _band_width);
         //行为
         auto vote() -> int;
 
@@ -24,4 +26,4 @@ namespace muse::simulator{
         auto add(int a, int b) -> int;
     };
 }
-#endif //MUSE_SIMULATOR_HOST_HPP
+#endif //MUSE_SIMULATOR_HO

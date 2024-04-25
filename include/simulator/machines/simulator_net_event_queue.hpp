@@ -4,7 +4,6 @@
 #include <mutex>
 #include <shared_mutex>
 #include "message.hpp"
-#include "host.hpp"
 
 namespace muse::simulator {
 

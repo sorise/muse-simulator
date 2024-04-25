@@ -1,7 +1,3 @@
-//
-// Created by 14270 on 2024-04-08.
-//
-
 #ifndef MUSE_SIMULATOR_SIMULATOR_HPP
 #define MUSE_SIMULATOR_SIMULATOR_HPP
 

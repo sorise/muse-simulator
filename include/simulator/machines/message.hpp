@@ -6,7 +6,6 @@
 #include "host_delay_matrix.hpp"
 #include "transmitter_event.hpp"
 #include "cpu_processing_matrix.hpp"
-#include "host.hpp"
 
 #include <cstdint>
 #include <string>
@@ -58,7 +57,7 @@ namespace muse::simulator{
         virtual ~message();
     };
 
-    static message* create_message_factory(host* caller, TransmitterEvent* _request){
+    static message* create_message_factory(const std::string& sender, TransmitterEvent* _request){
         if (_request == nullptr){
             return nullptr;
         }
@@ -66,7 +65,7 @@ namespace muse::simulator{
         auto msg_ptr = muse::simulator::new_by_pool<message>();
         msg_ptr->request = _request;
         msg_ptr->response = nullptr;
-        msg_ptr->sender_ip = caller->get_ip_address();
+        msg_ptr->sender_ip = sender;
         msg_ptr->acceptor_id = _request->get_ip_address();
         msg_ptr->bytes = _request->get_serializer().byteCount();
         msg_ptr->cpu_ms = CPU_PROCESSING_MATRIX::get_ptr()->get_server(_request->remote_process_name);

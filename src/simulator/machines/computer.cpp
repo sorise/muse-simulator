@@ -5,7 +5,11 @@
 
 namespace muse::simulator{
     computer::computer()
-    :_ip_address("0.0.0.0"), _memory_size(false),_cpu_frequency(0),_cpu_core_number(0) {
+    :_ip_address("0.0.0.0"),
+    _memory_size(false),_cpu_frequency(0),
+    _cpu_core_number(0), cpu_(4),
+    network_card_(51200),
+    band_width_(0) {
 
     }
 
@@ -26,7 +30,13 @@ namespace muse::simulator{
     }
 
     computer::computer(computer &&other) noexcept
-    :_ip_address(std::move(other._ip_address)), _memory_size(other._memory_size), _cpu_frequency(other._cpu_frequency), _cpu_core_number(other._cpu_core_number){
+    :_ip_address(std::move(other._ip_address)),
+    band_width_(other.band_width_),
+    _memory_size(other._memory_size),
+    _cpu_frequency(other._cpu_frequency),
+    _cpu_core_number(other._cpu_core_number),
+     cpu_(std::move(other.cpu_)),
+     network_card_(std::move(other.network_card_)){
 
     }
 
@@ -50,10 +60,31 @@ namespace muse::simulator{
         return this->_cpu_core_number;
     }
 
-    computer::computer(std::string ip_address, const uint64_t &memory_size, const double &cpu_frequency,const uint64_t &cpu_core_number)
-    :_ip_address(std::move(ip_address)), _memory_size(memory_size), _cpu_frequency(cpu_frequency), _cpu_core_number(cpu_core_number){
+
+    computer::computer(std::string ip_address, const uint64_t &memory_size, const double &cpu_frequency,const uint64_t &cpu_core_number, const uint64_t& _band_width)
+    :_ip_address(std::move(ip_address)),
+    _memory_size(memory_size),
+    _cpu_frequency(cpu_frequency),
+    _cpu_core_number(cpu_core_number),
+    band_width_(_band_width),
+    network_card_(_band_width),
+    cpu_(cpu_core_number){
 
     }
 
+    void computer::RPC(TransmitterEvent *event) {
+        //先丢给网络卡处理
+        if (event != nullptr){
+            message *msg = create_message_factory(this->_ip_address,event);
+            if (msg != nullptr){
+                this->network_card_.add_task(msg);
+            }else{
+                fmt::println("create_message_factory failed, from {}, to {}, func {}", this->_ip_address, event->ip_address, event->remote_process_name);
+            }
+        }
+    }
 
+    void computer::next_tick(const uint64_t &ms_tick) {
+        this->network_card_.next_tick(ms_tick);
+    }
 }

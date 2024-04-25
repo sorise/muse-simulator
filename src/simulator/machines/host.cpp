@@ -17,8 +17,8 @@ namespace muse::simulator{
         return a + b;
     }
 
-    host::host(std::string ip_address, const uint64_t &memory_size, const double &cpu_frequency,const uint64_t &cpu_core_number)
-    :computer(std::move(ip_address), memory_size, cpu_frequency, cpu_core_number), is_running(true) {
+    host::host(std::string ip_address, const uint64_t &memory_size, const double &cpu_frequency,const uint64_t &cpu_core_number, const uint64_t& _band_width)
+    :computer(std::move(ip_address), memory_size, cpu_frequency, cpu_core_number,_band_width), is_running(true) {
 
     }
 
