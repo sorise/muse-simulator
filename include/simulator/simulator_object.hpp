@@ -25,6 +25,8 @@ namespace muse::simulator {
 
         //模拟器运行结果报表生产
         virtual void simulator_report() = 0;
+
+        virtual void simulator_clean_up_resources() = 0;
     };
 }
 

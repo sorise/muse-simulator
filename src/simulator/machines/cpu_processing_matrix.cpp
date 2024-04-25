@@ -34,8 +34,6 @@ namespace muse::simulator{
         if (_unified_down_us > _unified_up_us){
             throw std::logic_error("The unified_latency_down_us must be less than or equal to the unified_latency_up_us");
         }
-        fmt::print("cpu_processing_matrix initial\n");
-
         this->initial_state_ = true;
         this->unified_cpu_down_us_ = _unified_down_us;
         this->unified_cpu_up_us_ = _unified_up_us;

@@ -23,6 +23,7 @@ namespace muse::simulator {
     private:
         //那些已经注册了的主机  ip+端口
         std::unordered_map<std::string, muse::simulator::host*> hosts;
+        std::list<muse::simulator::host*> host_list_;
         std::shared_mutex mtx;
         //事件队列 ， RPC Server 触发、 RPC Client 回调函数触发
     public:
@@ -31,13 +32,21 @@ namespace muse::simulator {
 
         host * get_host(const std::string& ip_or_and_port);
 
+        size_t get_host_count();
+
+        auto clear_hosts() -> void;
+
+        const std::list<muse::simulator::host*>& get_hosts_list();
+
         ~network_dispatcher();
     };
 
-    template class SIMULATOR_CPP_WIN_API singleton_lazy_heap<network_dispatcher>;
+    template class SIMULATOR_CPP_WIN_API muse::simulator::singleton_lazy_heap<muse::simulator::network_dispatcher>;
+
+    #define MUSE_NETWORK_DISPATCHER muse::simulator::singleton_lazy_heap<muse::simulator::network_dispatcher>
+
 }
 
-#define MUSE_NETWORK_DISPATCHER muse::simulator::singleton_lazy_heap<muse::simulator::network_dispatcher>
 
 #endif //MUSE_SIMULATOR_NETWORK_DISPATCHER_HPP
 

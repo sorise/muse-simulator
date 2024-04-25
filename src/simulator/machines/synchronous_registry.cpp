@@ -40,4 +40,8 @@ namespace muse::simulator{
         responseData.total_size = count;
         return responseData;
     }
+
+    uint64_t synchronous_registry::get_remote_functions() {
+        return this->concurrent_dictionary.size();
+    }
 }

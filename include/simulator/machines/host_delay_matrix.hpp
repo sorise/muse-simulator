@@ -49,7 +49,7 @@ namespace muse::simulator {
 
     template class SIMULATOR_CPP_WIN_API muse::simulator::singleton_lazy_heap<muse::simulator::host_delay_matrix>;
 
-    #define HOST_DELAY_MATRIX muse::simulator::singleton_lazy_heap<muse::simulator::host_delay_matrix>
+    #define MUSE_HOST_DELAY_MATRIX muse::simulator::singleton_lazy_heap<muse::simulator::host_delay_matrix>
 }
 
 #endif //MUSE_SIMULATOR_HOST_DELAY_MATRIX_HPP

@@ -68,7 +68,7 @@ namespace muse::simulator{
         msg_ptr->sender_ip = sender;
         msg_ptr->acceptor_id = _request->get_ip_address();
         msg_ptr->bytes = _request->get_serializer().byteCount();
-        msg_ptr->cpu_ms = CPU_PROCESSING_MATRIX::get_ptr()->get_server(_request->remote_process_name);
+        msg_ptr->cpu_ms = MUSE_CPU_PROCESSING_MATRIX::get_ptr()->get_server(_request->remote_process_name);
         return msg_ptr;
     }
 
@@ -77,7 +77,7 @@ namespace muse::simulator{
             return;
         }
         msg->response = data;
-        msg->cpu_ms = CPU_PROCESSING_MATRIX::get_ptr()->get_client(msg->request->remote_process_name);
+        msg->cpu_ms = MUSE_CPU_PROCESSING_MATRIX::get_ptr()->get_client(msg->request->remote_process_name);
         msg->bytes = data->getSize();
         msg->rpc_server_is_trigger = true;
     }

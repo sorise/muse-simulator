@@ -17,11 +17,9 @@ namespace muse::simulator{
 
         host(std::string ip_address, const uint64_t& memory_size, const double& cpu_frequency, const uint64_t& cpu_core_number, const uint64_t& _band_width);
         //行为
+        auto get_vote() -> void;
+
         auto vote() -> int;
-
-        auto vote_hash(std::string name) -> std::string;
-
-        auto add(int a, int b) -> int;
     };
 }
-#endif //MUSE_SIMULATOR_HO
+#endif //MUSE_SIMULATOR_HOST_HPP

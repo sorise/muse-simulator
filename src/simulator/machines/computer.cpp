@@ -5,10 +5,10 @@
 
 namespace muse::simulator{
     computer::computer()
-    :_ip_address("0.0.0.0"),
-    _memory_size(false),_cpu_frequency(0),
-    _cpu_core_number(0), cpu_(4),
-    network_card_(51200),
+    :_ip_address("127.0.0.1"),
+    _memory_size(false),_cpu_frequency(2.5),
+    _cpu_core_number(4), cpu_(4),
+    network_card_(5120000),
     band_width_(0) {
 
     }

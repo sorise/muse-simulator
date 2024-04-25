@@ -44,6 +44,6 @@ namespace muse::simulator {
     template class SIMULATOR_CPP_WIN_API singleton_lazy_heap<cpu_processing_matrix>;
 }
 
-#define CPU_PROCESSING_MATRIX muse::simulator::singleton_lazy_heap<muse::simulator::cpu_processing_matrix>
+#define MUSE_CPU_PROCESSING_MATRIX muse::simulator::singleton_lazy_heap<muse::simulator::cpu_processing_matrix>
 
 #endif //MUSE_SIMULATOR_CPU_PROCESSING_MATRIX_HPP

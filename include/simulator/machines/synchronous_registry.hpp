@@ -131,7 +131,6 @@ namespace muse::simulator {
             return false;
         }
 
-
         /*查看某个名称下是否具有方法*/
         bool check(const std::string& name);
 
@@ -142,8 +141,13 @@ namespace muse::simulator {
         void runEnsured(const std::string& name, BinarySerializer *serializer);
 
         static ResponseData convert_result_to_response(BinarySerializer *serializer);
+
+        uint64_t get_remote_functions();
     };
 
+    template class SIMULATOR_CPP_WIN_API singleton_lazy_heap<synchronous_registry>;
+
+    #define MUSE_SYNCHRONOUS_REGISTRY muse::simulator::singleton_lazy_heap<muse::simulator::synchronous_registry>
 }
 
 

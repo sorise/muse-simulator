@@ -49,7 +49,7 @@ namespace muse::simulator {
                     message* ptr = start->get_message();
                     //如果再请求阶段，需要服务器触发事件
                     if (ptr->get_rpc_phase() == message_rpc_phase::RPC_REQUEST){
-                        auto random_delay = HOST_DELAY_MATRIX::get_ptr()->get_delay(ptr->sender_ip, ptr->acceptor_id);
+                        auto random_delay = MUSE_HOST_DELAY_MATRIX::get_ptr()->get_delay(ptr->sender_ip, ptr->acceptor_id);
                         auto delay = tick + random_delay;
                         start->set_end_ms(delay);
                         this->latency_tasks_set.emplace(delay, ptr);

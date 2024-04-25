@@ -19,7 +19,6 @@ namespace muse::simulator{
         if (_unified_latency_down_ms > _unified_latency_up_ms){
             throw std::logic_error("The unified_latency_down_ms must be less than or equal to the unified_latency_up_ms");
         }
-        fmt::print("host_delay_matrix initial\n");
         this->initial_state_ = true;
         this->unified_latency_down_ms_ = _unified_latency_down_ms;
         this->unified_latency_up_ms_ = _unified_latency_up_ms;
