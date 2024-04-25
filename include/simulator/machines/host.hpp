@@ -5,8 +5,6 @@
 #include "computer.hpp"
 
 namespace muse::simulator{
-    
-
     //定义任务
     class SIMULATOR_CPP_WIN_API host : public muse::simulator::computer{
         /* 需要有状态存储 */

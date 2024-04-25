@@ -231,6 +231,8 @@ namespace muse::simulator {
         /* 触发回调函数 */
         void trigger_callBack(ResponseData* responseData);
     };
+
+
 }
 
 #endif //MUSE_SIMULATOR_TRANSMITTER_EVENT_HPP

@@ -5,7 +5,12 @@
 namespace muse::simulator{
 
     auto host::vote() -> int {
-        std::cout << "vote" << std::endl;
+        auto ev = new_by_pool<TransmitterEvent>("127.0.0.1",15000);
+        ev->call<int>("rpc::vote",12);
+        ev->set_callBack([&](Outcome<int> r){
+
+        });
+        RPC(ev);
         return 5;
     }
 
