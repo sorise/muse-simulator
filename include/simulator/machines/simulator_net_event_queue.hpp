@@ -26,7 +26,7 @@ namespace muse::simulator {
 
     class simulator_net_event_queue {
     private:
-        static std::unique_ptr<std::queue<simulator_event>> instance_;
+        static std::unique_ptr<std::list<simulator_event>> instance_;
         static std::shared_mutex mutex_;
     public:
         //插入事件

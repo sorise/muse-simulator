@@ -20,6 +20,8 @@ namespace muse::simulator{
         auto get_vote() -> void;
 
         auto vote() -> int;
+
+        void START_UP() override;
     };
 }
 #endif //MUSE_SIMULATOR_HOST_HPP

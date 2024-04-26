@@ -12,6 +12,11 @@ namespace muse::simulator{
         if (MUSE_SYNCHRONOUS_REGISTRY::get_reference().get_remote_functions() < 1){
             fmt::println("error 2, simulating the world requires more than two hosts. current host count: {}.", MUSE_NETWORK_DISPATCHER::get_reference().get_host_count());
         }
+        //调用初始化方法
+        const auto hosts =  MUSE_NETWORK_DISPATCHER::get_ptr()->get_hosts_list();
+        std::for_each(hosts.begin(), hosts.end(), [=](host* host_ptr){
+            host_ptr->START_UP();
+        });
     }
 
     void simulator::simulator_operating_core() {

@@ -127,7 +127,6 @@ add_library(simulator SHARED
         src/simulator/encryption/encryption.cpp
         src/simulator/encryption/hash_handler.cpp
         src/simulator/encryption/rsa_handler.cpp
-        src/simulator/simulator.cpp
         src/simulator/network_dispatcher.cpp
         src/simulator/consensus/stack_calculator.cpp
         src/simulator/machines/computer.cpp
@@ -147,7 +146,9 @@ add_library(simulator SHARED
         include/simulator/machines/world_user.hpp
         src/simulator/machines/simulator_host_event_queue.cpp
         src/simulator/simulator_world_state.cpp
+        src/simulator/simulator.cpp
         src/simulator/simulator_object.cpp
+        src/simulator/machines/registry.cpp
 )
 
 target_link_libraries(simulator PUBLIC fmt museTimer ${OpenSSL_LIB_NAME_SSL} ${OpenSSL_LIB_NAME_CRYPTO} secp256k1)

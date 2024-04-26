@@ -87,4 +87,8 @@ namespace muse::simulator{
     void computer::next_tick(const uint64_t &ms_tick) {
         this->network_card_.next_tick(ms_tick);
     }
+
+    void computer::START_UP() {
+
+    }
 }

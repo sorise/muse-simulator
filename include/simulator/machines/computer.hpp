@@ -60,6 +60,8 @@ namespace muse::simulator{
 
         void next_tick(const uint64_t& ms_tick);
 
+        virtual void START_UP();
+
     };
 }
 

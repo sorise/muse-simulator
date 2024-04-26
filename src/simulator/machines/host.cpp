@@ -29,4 +29,8 @@ namespace muse::simulator{
     host::host():computer(), is_running(true) {
 
     }
+
+    void host::START_UP() {
+        printf("host start up\n");
+    }
 }
