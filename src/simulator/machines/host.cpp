@@ -33,4 +33,8 @@ namespace muse::simulator{
     void host::START_UP() {
         printf("host start up\n");
     }
+
+    host::~host() {
+        printf("host disappear !\n");
+    }
 }

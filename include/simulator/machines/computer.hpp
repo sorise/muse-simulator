@@ -35,7 +35,7 @@ namespace muse::simulator{
 
         computer(computer&& other) noexcept ;
 
-        ~computer() = default;
+        virtual ~computer() = default;
 
         /* 单位为 字节 */
         auto set_memory_size(const uint64_t& memory_size) -> void;

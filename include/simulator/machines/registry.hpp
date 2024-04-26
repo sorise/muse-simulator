@@ -14,6 +14,7 @@
 #include "response_data.hpp"
 #include "rpc_response_header.hpp"
 #include "serializer/binarySerializer.h"
+#include "../network_dispatcher.hpp"
 
 using namespace muse::serializer;
 
@@ -41,7 +42,7 @@ namespace muse::simulator {
         /* 函数有返回值 */
         template<typename R, typename C, typename ...Params>
         typename std::enable_if<!std::is_same<R, void>::value, void>::type
-        callBind(R(C::*func)(Params...), BinarySerializer *serializer){
+        callBind(R(C::*func)(Params...), C* c, BinarySerializer *serializer){
             RpcResponseHeader header;
             std::tuple<typename std::decay<Params>::type...> tpl;
             try {
@@ -59,8 +60,7 @@ namespace muse::simulator {
             }
             //防止参数解析失败
             try {
-                C c;
-                R result = invoke_impl(func, &c,tpl, std::make_index_sequence<sizeof...(Params)>{});
+                R result = invoke_impl(func, c,tpl, std::make_index_sequence<sizeof...(Params)>{});
                 serializer->clear();
                 header.setOkState(true); //执行成功
                 serializer->input(header); //先写入头，再写入结果
@@ -96,7 +96,7 @@ namespace muse::simulator {
             }
             //防止参数解析失败
             try {
-                invoke_impl(func, tpl, &c, std::make_index_sequence<sizeof...(Params)>{});
+                invoke_impl(func, tpl, c, std::make_index_sequence<sizeof...(Params)>{});
                 serializer->clear();
                 header.setOkState(true); //执行成功
                 serializer->input(header); //先写入头，再写入结果
@@ -112,7 +112,9 @@ namespace muse::simulator {
         //函数成员指针
         template<typename R, typename C, typename... Params>
         void callProxy(R(C::* func)(Params...),void *caller, BinarySerializer* serializer){
-            callBind(func, caller, serializer);
+            static_assert(std::is_base_of_v<muse::simulator::computer, C>);
+            C *c = static_cast<C *>(caller);
+            callBind<R, C, Params...>(func, c, serializer);
         }
 
         template<typename F>

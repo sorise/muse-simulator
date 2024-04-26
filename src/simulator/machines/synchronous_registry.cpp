@@ -8,13 +8,13 @@ namespace muse::simulator{
 
     void synchronous_registry::runSafely(const std::string &name, BinarySerializer *serializer) {
         if (check(name)){
-            host *caller = MUSE_NETWORK_DISPATCHER::get_ptr()->get_host(name);
+            host *caller = dynamic_cast<host*>(MUSE_NETWORK_DISPATCHER::get_ptr()->get_host(name));
             concurrent_dictionary[name]->func(caller, serializer);
         }
     }
 
     void synchronous_registry::runEnsured(const std::string &name, BinarySerializer *serializer) {
-        host *caller = MUSE_NETWORK_DISPATCHER::get_ptr()->get_host(name);
+        host *caller = dynamic_cast<host*>(MUSE_NETWORK_DISPATCHER::get_ptr()->get_host(name));
         concurrent_dictionary[name]->func(caller, serializer);
     }
 

@@ -6,6 +6,7 @@
 #include <shared_mutex>
 #include <iostream>
 #include <exception>
+#include <memory>
 #include <memory_resource>
 #include <fmt/format.h>
 #include "utils/toolkits.hpp"
@@ -135,9 +136,32 @@ namespace muse::simulator {
         if (place == nullptr){
             return nullptr;
         }
+        fmt::print("new_by_pool:{}\n", sizeof(T));
         T* real = new(place) T(std::forward<Args>(args)...); //定位 new
         return real;
     }
+
+    template<typename T, typename ...Args>
+    auto new_by_pool_share(Args&&... args) ->std::shared_ptr<T>{
+        static_assert(std::is_destructible<T>());
+        constexpr size_t T_size = sizeof(T);
+
+        void * place = singleton_memory_pool::get_ptr()->allocate(T_size);
+        if (place == nullptr){
+            return nullptr;
+        }
+
+        T* real = new(place) T(std::forward<Args>(args)...); //定位 new
+        //fmt::print("new_by_pool_smart:{}\n", sizeof(T));
+
+        std::shared_ptr<T> result(real, [T_size](T *p){
+            //fmt::print("delete_by_pool_smart:{}\n", sizeof(T));
+            p->~T(); //析构函数调用
+            singleton_memory_pool::get_ptr()->deallocate(p, T_size);
+        });
+        return result;
+    }
+
 
     template<typename T>
     auto delete_by_pool(T *ptr) ->void{
@@ -145,6 +169,7 @@ namespace muse::simulator {
         ptr->~T();
         auto sin_ptr = singleton_memory_pool::get_ptr();
         if (sin_ptr!= nullptr){
+            //fmt::print("delete_by_pool:{}\n", sizeof(T));
             sin_ptr->deallocate(ptr, sizeof(T));
         }
     }

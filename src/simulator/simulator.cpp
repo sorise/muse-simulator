@@ -14,7 +14,7 @@ namespace muse::simulator{
         }
         //调用初始化方法
         const auto hosts =  MUSE_NETWORK_DISPATCHER::get_ptr()->get_hosts_list();
-        std::for_each(hosts.begin(), hosts.end(), [=](host* host_ptr){
+        std::for_each(hosts.begin(), hosts.end(), [=](auto host_ptr){
             host_ptr->START_UP();
         });
     }
@@ -22,7 +22,7 @@ namespace muse::simulator{
     void simulator::simulator_operating_core() {
         uint64_t ms_tick = SIMULATOR_WORLD_STATE::get_ptr()->get_tick();
         const auto hosts =  MUSE_NETWORK_DISPATCHER::get_ptr()->get_hosts_list();
-        std::for_each(hosts.begin(), hosts.end(), [=](host* host_ptr){
+        std::for_each(hosts.begin(), hosts.end(), [=](auto host_ptr){
             host_ptr->next_tick(ms_tick);
         });
         //处理网络事件
