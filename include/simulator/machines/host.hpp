@@ -1,6 +1,8 @@
 #ifndef MUSE_SIMULATOR_HOST_HPP
 #define MUSE_SIMULATOR_HOST_HPP
 
+#include <utility>
+
 #include "utils/toolkits.hpp"
 #include "computer.hpp"
 

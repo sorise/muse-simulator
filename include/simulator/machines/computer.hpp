@@ -2,15 +2,19 @@
 #define MUSE_SIMULATOR_COMPUTER_HPP
 
 #include "fmt/format.h"
-#include "network_card.hpp"
 #include "utils/toolkits.hpp"
-#include "central_processing_unit.hpp"
+#include "network_card.hpp"
 #include "transmitter_event.hpp"
+#include "cpu_processing_matrix.hpp"
+#include "central_processing_unit.hpp"
+#include "computer_simulator_timer.hpp"
 
-#include <iostream>
 #include <cstdint>
+#include <iostream>
 
 namespace muse::simulator{
+    class SIMULATOR_CPP_WIN_API network_dispatcher;
+
     class SIMULATOR_CPP_WIN_API computer{
     private:
         std::string _ip_address;
@@ -23,9 +27,13 @@ namespace muse::simulator{
 
         uint64_t band_width_; //带宽
 
-        central_processing_unit cpu_;
+        std::mutex cpu_mtx_;
 
-        network_card network_card_;
+        central_processing_unit cpu_;  //CPU 模拟器
+
+        network_card network_card_;    //网卡 模拟器
+    protected:
+        computer_simulator_timer TIMER; //分布式仿真定时器
     public:
         computer();
 
@@ -56,13 +64,17 @@ namespace muse::simulator{
 
         [[nodiscard]] auto get_cpu_core_number() const -> uint64_t;
 
-        void RPC(TransmitterEvent* event);
+        void RPC_CALL(TransmitterEvent* event);
 
         void next_tick(const uint64_t& ms_tick);
 
-        virtual void START_UP();
+        /* 运行定时器 */
+        bool run_timer(const uint64_t& ms_tick);
 
+        uint32_t get_spare_core(const uint64_t& ms_tick);
+
+        //启动程序的函数
+        virtual void START_UP();
     };
 }
-
 #endif //MUSE_SIMULATOR_COMPUTER_HPP

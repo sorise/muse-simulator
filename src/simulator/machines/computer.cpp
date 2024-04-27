@@ -72,7 +72,7 @@ namespace muse::simulator{
 
     }
 
-    void computer::RPC(TransmitterEvent *event) {
+    void computer::RPC_CALL(TransmitterEvent *event) {
         //先丢给网络卡处理
         if (event != nullptr){
             message *msg = create_message_factory(this->_ip_address,event);
@@ -91,4 +91,30 @@ namespace muse::simulator{
     void computer::START_UP() {
 
     }
+
+    bool computer::run_timer(const uint64_t& ms_tick) {
+        uint64_t us_tick = ms_tick * 1000;
+        //判断是否用空闲的处理器  0 表示有定时器需要触发
+        while (this->TIMER.checkTimeout() == 0){
+            std::unique_lock lock(this->cpu_mtx_);
+            auto idx = this->cpu_.get_spare_core(us_tick);
+            if (idx != -1){
+                //存在多核心
+                auto task_name = TIMER.runTask();
+                auto runtime = MUSE_CPU_PROCESSING_MATRIX::get_reference().get_function_processing_time(task_name);
+                bool result = this->cpu_.carry_on_core(us_tick, runtime);
+                if (!result){
+                    throw std::logic_error("carry_on_core failed in computer::run_timer");
+                }
+            }
+        }
+        return true;
+    }
+
+    uint32_t computer::get_spare_core(const uint64_t &ms_tick) {
+        std::unique_lock lock(this->cpu_mtx_);
+        return cpu_.get_spare_core(ms_tick);
+    }
+
+
 }

@@ -2,8 +2,7 @@
 #define MUSE_SIMULATOR_SIMULATOR_WORLD_STATE_HPP
 
 #include <cstdint>
-#include "network_dispatcher.hpp"
-#include "../utils/toolkits.hpp"
+#include "utils/singleton.hpp"
 
 namespace muse::simulator{
     class SIMULATOR_CPP_WIN_API simulator_world_state {
@@ -22,9 +21,8 @@ namespace muse::simulator{
         void reset_simulator_world();
     };
 
-    template class singleton_lazy_heap<simulator_world_state>;
+    template class  SIMULATOR_CPP_WIN_API muse::simulator::singleton_lazy_heap<muse::simulator::simulator_world_state>;
+
+    #define SIMULATOR_WORLD_STATE muse::simulator::singleton_lazy_heap<muse::simulator::simulator_world_state>
 }
-
-#define SIMULATOR_WORLD_STATE muse::simulator::singleton_lazy_heap<muse::simulator::simulator_world_state>
-
 #endif //MUSE_SIMULATOR_SIMULATOR_WORLD_STATE_HPP

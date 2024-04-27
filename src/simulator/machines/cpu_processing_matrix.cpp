@@ -90,4 +90,41 @@ namespace muse::simulator{
             }
         }
     }
+
+    auto cpu_processing_matrix::set_function_processing_time(const std::string &name, const uint32_t &_unified_cpu_down_us, const uint32_t &_unified_cpu_up_us) ->  bool {
+        if (!this->initial_state_){
+            throw std::logic_error("The cpu_processing_matrix is not initialized");
+        }
+        auto it = this->cpu_map_->find(name);
+        if (it == this->cpu_map_->end()){
+            bool is_equal = (_unified_cpu_down_us == _unified_cpu_up_us);
+            this->cpu_map_->operator[](name) = std::make_tuple(_unified_cpu_down_us, _unified_cpu_up_us, is_equal);
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    auto cpu_processing_matrix::get_function_processing_time(const std::string &name) -> uint32_t {
+        if (!this->initial_state_){
+            throw std::logic_error("The cpu_processing_matrix is not initialized");
+        }
+        auto it = this->cpu_map_->find(name);
+        if( it == this->cpu_map_->end()){
+            if (this->down_equal_up_){
+                return this->unified_cpu_down_us_;
+            }else{
+                return get_random_number(this->unified_cpu_down_us_, this->unified_cpu_up_us_);//得到0到9之间的数
+            }
+        }else{
+            auto tpl = this->cpu_map_->at(name);
+            if (std::get<0>(tpl) == std::get<1>(tpl)){
+                return std::get<0>(tpl);
+            }else{
+                return get_random_number(std::get<0>(tpl) , std::get<1>(tpl));
+            }
+        }
+    }
+
+
 }

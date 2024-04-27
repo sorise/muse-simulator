@@ -3,6 +3,7 @@
 
 #include <mutex>
 #include <shared_mutex>
+
 #include "message.hpp"
 
 namespace muse::simulator {
@@ -40,6 +41,15 @@ namespace muse::simulator {
 
         //重置时间队列
         static auto reset() -> void;
+
+        /*
+         * 返回值决定是否将当前的 simulator_event 删除
+         * */
+        static auto for_each(std::function<bool(simulator_event&)>& f) -> void;
+
+        static auto for_each(const std::function<bool(simulator_event&)>& f) -> void;
+
+        static auto for_each(std::function<bool(simulator_event&)>&& f) -> void;
     };
 }
 

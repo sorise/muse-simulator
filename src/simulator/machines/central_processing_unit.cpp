@@ -65,4 +65,15 @@ namespace muse::simulator {
         }
         return *this;
     }
+
+    int32_t central_processing_unit::get_spare_core_count(const uint64_t& ms_tick) {
+        auto tick = ms_tick * 1000; //毫秒转换为微妙
+        int vacant = 0;
+        for (auto& core: this->core_load_) {
+            if (core <= tick){
+                vacant++;
+            }
+        }
+        return vacant;
+    }
 }

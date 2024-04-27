@@ -4,10 +4,10 @@
 #include "../utils/toolkits.hpp"
 #include "../utils/singleton.hpp"
 
-#include <vector>
 #include <mutex>
-#include <shared_mutex>
+#include <vector>
 #include <string>
+#include <shared_mutex>
 #include <unordered_map>
 
 #include "machines/computer.hpp"
@@ -16,6 +16,7 @@
 #include "machines/network_card.hpp"
 
 namespace muse::simulator {
+    class SIMULATOR_CPP_WIN_API computer;
     /*
      * @网络调度器 需要有一个网络节点列表，一个事件队列，一个事件队列锁
      * */

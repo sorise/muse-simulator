@@ -116,6 +116,7 @@ namespace muse::simulator {
             return *(instance_);
         }
     private:
+
         static void init(){
             std::pmr::pool_options option;
             option.largest_required_pool_block = 1024*1024*5; //5M
@@ -124,11 +125,13 @@ namespace muse::simulator {
         }
 
         static std::once_flag _flag;
+
         static  std::unique_ptr<std::pmr::synchronized_pool_resource> instance_;
     };
 
     using singleton_memory_pool = singleton_lazy_heap<std::pmr::synchronized_pool_resource>;
 
+    /* 如果T没有上下游继承关系，推荐使用 */
     template<typename T, typename ...Args>
     auto new_by_pool(Args&&... args) ->T*{
         static_assert(std::is_destructible<T>());
@@ -141,6 +144,7 @@ namespace muse::simulator {
         return real;
     }
 
+    /* 如果T有继承关系，推荐使用 */
     template<typename T, typename ...Args>
     auto new_by_pool_share(Args&&... args) ->std::shared_ptr<T>{
         static_assert(std::is_destructible<T>());
@@ -150,28 +154,19 @@ namespace muse::simulator {
         if (place == nullptr){
             return nullptr;
         }
-
         T* real = new(place) T(std::forward<Args>(args)...); //定位 new
-        //fmt::print("new_by_pool_smart:{}\n", sizeof(T));
-
         std::shared_ptr<T> result(real, [T_size](T *p){
-            //fmt::print("delete_by_pool_smart:{}\n", sizeof(T));
             p->~T(); //析构函数调用
             singleton_memory_pool::get_ptr()->deallocate(p, T_size);
         });
         return result;
     }
 
-
     template<typename T>
     auto delete_by_pool(T *ptr) ->void{
         static_assert(std::is_destructible<T>());
         ptr->~T();
-        auto sin_ptr = singleton_memory_pool::get_ptr();
-        if (sin_ptr!= nullptr){
-            //fmt::print("delete_by_pool:{}\n", sizeof(T));
-            sin_ptr->deallocate(ptr, sizeof(T));
-        }
+        singleton_memory_pool::get_ptr()->deallocate(ptr, sizeof(T));
     }
 }
 

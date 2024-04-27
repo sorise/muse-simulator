@@ -1,5 +1,3 @@
-#include <utility>
-
 #include "simulator/machines/host.hpp"
 
 namespace muse::simulator{
@@ -14,7 +12,7 @@ namespace muse::simulator{
                 fmt::println("get vote failed, {} {}", (short)r.protocolReason, r.response.getReason());
             }
         });
-        RPC(ev);
+        this->RPC_CALL(ev);
     }
 
     auto host::vote() -> int {
@@ -31,7 +29,7 @@ namespace muse::simulator{
     }
 
     void host::START_UP() {
-        printf("host start up\n");
+        this->TIMER.setTimeout("TIMER/VOTE", 1000, &host::get_vote, this);
     }
 
     host::~host() {

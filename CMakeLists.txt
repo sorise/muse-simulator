@@ -119,6 +119,7 @@ add_library(simulator SHARED
         src/utils/singleton.cpp
         include/serializer/binaryDeserializeView.cpp
         include/serializer/binarySerializer.cpp
+        src/simulator/consensus/stack_calculator.cpp
         include/serializer/util.cpp
         src/simulator/db/block.cpp
         src/simulator/encryption/bitcoin_secp256k1.cpp
@@ -127,8 +128,9 @@ add_library(simulator SHARED
         src/simulator/encryption/encryption.cpp
         src/simulator/encryption/hash_handler.cpp
         src/simulator/encryption/rsa_handler.cpp
-        src/simulator/network_dispatcher.cpp
-        src/simulator/consensus/stack_calculator.cpp
+        src/simulator/simulator_world_state.cpp
+        src/simulator/simulator.cpp
+        src/simulator/simulator_object.cpp
         src/simulator/machines/computer.cpp
         src/simulator/machines/host.cpp
         src/simulator/machines/message.cpp
@@ -136,19 +138,17 @@ add_library(simulator SHARED
         src/simulator/machines/rpc_response_header.cpp
         src/simulator/machines/transmitter_event.cpp
         src/simulator/machines/synchronous_registry.cpp
-        src/simulator/machines/simulator_timer.cpp
         src/simulator/machines/host_delay_matrix.cpp
         src/simulator/machines/network_card_task.cpp
         src/simulator/machines/network_card.cpp
         src/simulator/machines/cpu_processing_matrix.cpp
         src/simulator/machines/simulator_net_event_queue.cpp
         src/simulator/machines/central_processing_unit.cpp
-        include/simulator/machines/world_user.hpp
-        src/simulator/machines/simulator_host_event_queue.cpp
-        src/simulator/simulator_world_state.cpp
-        src/simulator/simulator.cpp
-        src/simulator/simulator_object.cpp
         src/simulator/machines/registry.cpp
+        src/simulator/machines/timer_node.cpp
+        src/simulator/machines/simulator_host_event_queue.cpp
+        src/simulator/machines/computer_simulator_timer.cpp
+        src/simulator/network_dispatcher.cpp
 )
 
 target_link_libraries(simulator PUBLIC fmt museTimer ${OpenSSL_LIB_NAME_SSL} ${OpenSSL_LIB_NAME_CRYPTO} secp256k1)

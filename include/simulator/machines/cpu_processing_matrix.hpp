@@ -39,6 +39,10 @@ namespace muse::simulator {
         auto get_client(const std::string& name)->uint32_t ;
 
         auto get_server(const std::string& name)->uint32_t ;
+
+        auto set_function_processing_time(const std::string& name, const uint32_t& _unified_cpu_down_us, const uint32_t& _unified_cpu_up_us)-> bool;
+
+        auto get_function_processing_time(const std::string& name)->uint32_t ;
     };
 
     template class SIMULATOR_CPP_WIN_API singleton_lazy_heap<cpu_processing_matrix>;

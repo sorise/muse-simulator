@@ -33,6 +33,8 @@ namespace muse::simulator {
 
         int32_t get_spare_core(const uint64_t& us_tick);
 
+        int32_t get_spare_core_count(const uint64_t& ms_tick);
+
         bool carry_on_core(const uint64_t& tick, const uint64_t &_us_);
 
         /* 毫秒 */

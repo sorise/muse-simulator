@@ -3,7 +3,7 @@
 
 #include <cstdint>
 #include "machines/central_processing_unit.hpp"
-#include "machines/synchronous_registry.hpp"
+#include "machines/registry.hpp"
 #include "machines/cpu_processing_matrix.hpp"
 #include "machines/host_delay_matrix.hpp"
 #include "simulator_object.hpp"

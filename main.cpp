@@ -1,7 +1,10 @@
 #include <iostream>
 #include <climits>
+
 #include "simulator/simulator.hpp"
+#include "simulator/machines/host.hpp"
 #include "simulator/machines/registry.hpp"
+#include "simulator/machines/computer_simulator_timer.hpp"
 
 struct Base{
 
@@ -19,6 +22,10 @@ struct A:public Base{
         std::cout << "A Constructor" << std::endl;
     }
 
+    int add(int a, int b){
+        return  a + b;
+    }
+
     ~A() override{
         std::cout << "A Destructor" << std::endl;
     }
@@ -26,6 +33,7 @@ struct A:public Base{
 
 //通用成员函数包装器
 int main() {
+
     MUSE_CPU_PROCESSING_MATRIX::get_ptr()->initial(100, 12000);
     MUSE_HOST_DELAY_MATRIX::get_ptr()->initial(muse::simulator::host_delay_type::Different_Latency, 100, 100);
 
@@ -37,13 +45,13 @@ int main() {
     );
     //注册方法
     MUSE_REGISTRY::get_reference().Bind("RPC:Vote",&muse::simulator::host::vote);
-//
-//    //注册主机
+
+    //注册主机
     MUSE_NETWORK_DISPATCHER::get_reference().register_host(A1);
     MUSE_NETWORK_DISPATCHER::get_reference().register_host(A2);
-//
-//    muse::simulator::simulator _simulator;
-//    //运行模拟器
-//    _simulator.run();
+
+    muse::simulator::simulator _simulator;
+    //运行模拟器
+    _simulator.run();
     return 0;
 }
