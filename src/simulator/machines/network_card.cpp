@@ -24,13 +24,12 @@ namespace muse::simulator {
             waiting_tasks.push_back(task);
         }
         else if (msg->get_rpc_phase() == message_rpc_phase::RPC_RESPONSE){
-            std::unique_lock lock(this->mtx_waiting_tasks_);
+            std::unique_lock lock(this->rlt_set_mtx);
             if (msg->response == nullptr){
                 lock.unlock();
                 throw std::runtime_error("response is nullptr");
             }
-            network_card_task task(msg, msg->response->getSize(),this->real_tick_, 0);
-            waiting_tasks.push_back(task);
+            response_latency_tasks_set.emplace(msg->cpu_processing_us/1000, msg);
         }
         //计算剩余可用带宽
         return true;
@@ -38,6 +37,17 @@ namespace muse::simulator {
 
     auto network_card::next_tick(const uint64_t& tick) -> void {
         this->real_tick_ = tick;
+        /* response_latency_tasks_set to waiting_tasks*/
+        {
+            auto start = this->response_latency_tasks_set.begin();
+            //已经具备发送条件了
+            while (start != this->response_latency_tasks_set.end() && start->first <= tick){
+                message* msg = start->second;
+                network_card_task task(msg, msg->get_message_bytes(),this->real_tick_, 0);
+                start = this->response_latency_tasks_set.erase(start);
+                this->waiting_tasks.emplace_back(task);
+            }
+        }
         //判断是否有任务等待发送
         uint64_t host_left_float_bytes = this->band_width_current_ms_;
         //检查是否发生完了，发生完毕需要触发事件
@@ -72,6 +82,7 @@ namespace muse::simulator {
                 if (host_left_float_bytes == 0) break;
             }
         }
+
         if (host_left_float_bytes > 0){
             //将等待队列的任务加入到发送队列中
             auto bgn = waiting_tasks.begin();
@@ -88,7 +99,6 @@ namespace muse::simulator {
                 sending_tasks.push_back(*bgn);
                 //从等待队列中删除
                 bgn = waiting_tasks.erase(bgn);
-
                 if (host_left_float_bytes == 0) break;
             }
         }
@@ -96,12 +106,13 @@ namespace muse::simulator {
         auto it = this->latency_tasks_set.begin();
         while (it != this->latency_tasks_set.end() && it->first <= tick){
             auto ptr = it->second;
-
             if (ptr->get_rpc_phase() == message_rpc_phase::RPC_REQUEST){
                 ptr->rpc_client_is_finish_sending = true;
             }
-            if (ptr->get_rpc_phase() == message_rpc_phase::RPC_RESPONSE){
+            else if (ptr->get_rpc_phase() == message_rpc_phase::RPC_RESPONSE){
                 ptr->rpc_server_is_finish_sending = true;
+            }else if (ptr->get_rpc_phase() == message_rpc_phase::RPC_FINISH){
+                throw std::runtime_error("class network_card message_rpc_phase is invalid.");
             }
             simulator_event ev{simulator_net_event_type::RPC_RESPONSE_FINISH, ptr};
             //加入到全局队列中

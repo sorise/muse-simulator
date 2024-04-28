@@ -5,6 +5,7 @@
 #include "fmt/format.h"
 #include "simulator_object.hpp"
 #include "machines/registry.hpp"
+#include "machines/simulator_setting.hpp"
 #include "machines/host_delay_matrix.hpp"
 #include "machines/cpu_processing_matrix.hpp"
 #include "machines/central_processing_unit.hpp"
@@ -15,6 +16,7 @@ namespace muse::simulator{
     private:
         void initialize_simulator() override;
 
+        /* 每毫秒运行一次，可以理解为帧 */
         void simulator_operating_core() override;
 
         bool stop_simulator_condition() override;
@@ -27,6 +29,7 @@ namespace muse::simulator{
 
         ~simulator() override;
 
+        //得到当前微秒
         static std::chrono::microseconds get_tick(){
             std::chrono::time_point<std::chrono::system_clock> tp =
                     std::chrono::time_point_cast<std::chrono::microseconds>(std::chrono::system_clock::now());

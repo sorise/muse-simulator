@@ -20,9 +20,14 @@ namespace muse::simulator{
 
     struct SIMULATOR_CPP_WIN_API message{
         uint64_t cpu_ms{0};           //处理时间 ms
+
         std::string sender_ip;     //发送者 id
+
         std::string acceptor_id;   //接受者 id
+
         uint64_t bytes{0};            //大小、字节
+
+        uint64_t cpu_processing_us {0}; //需要等待多久 时间单位是 微秒
 
         TransmitterEvent* request{nullptr}; /* 等待触发的事件 */
 

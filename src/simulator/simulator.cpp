@@ -15,9 +15,10 @@ namespace muse::simulator{
         }
         //调用初始化方法
         const auto hosts =  MUSE_NETWORK_DISPATCHER::get_ptr()->get_hosts_list();
-        if (hosts.size() > 1024){
+        if (hosts.size() > MUSE_SIMULATOR_SETTING::HOST_USE_THREAD_COUNT){
             //主机数量太多就需要 需要并行算法优化
             std::list<std::shared_ptr<muse::pool::ExecutorToken<void>>> futures(hosts.size());
+
             for (const auto& host_ptr: hosts) {
                 auto token = muse::pool::make_executor([](computer* cmp){
                     cmp->START_UP();//启动主机
@@ -25,6 +26,7 @@ namespace muse::simulator{
                 singleton_thread_pool::get_ptr()->commit_executor(token);
                 futures.push_back(token);
             }
+            //等待
             for (const auto& fu: futures) {
                 fu->get();
             }
@@ -49,48 +51,61 @@ namespace muse::simulator{
 
         //执行网络事件
         simulator_net_event_queue::for_each([=](simulator_event& sev)->bool {
+            //已经完成传输需要等待服务端进行处理
+            auto _host = MUSE_NETWORK_DISPATCHER::get_reference().get_host(sev.message_->acceptor_id);
+            //获取目标主机
+            auto space_cc = _host->_get_spare_core(ms_tick);
             if (sev.event_type_ == simulator_net_event_type::RPC_REQUEST_FINISH){
-                //已经完成传输需要等待服务端进行处理
-                auto _host = MUSE_NETWORK_DISPATCHER::get_reference().get_host(sev.message_->acceptor_id);
-                //获取目标主机
-                auto space_cc = _host->_get_spare_core(ms_tick);
                 if ( space_cc <= 0){
                     //没有主机没有空闲核心可以运行任务
                     return false;
-                }else{
-                    //有主机空闲核心可以运行任务
-                    std::string rpc_name;
-                    sev.message_->request->get_serializer().reset();
-                    //解析 RPC 函数名
-                    sev.message_->request->get_serializer().output(rpc_name);
-                    //解析 RPC 函数名
-                    if (MUSE_REGISTRY::get_ptr()->check(rpc_name)){
-                        //运行调用任务
-                        auto _runtime = MUSE_CPU_PROCESSING_MATRIX::get_ptr()->get_server(rpc_name);
-                        //_runtime 活动CPU运行时间
-                        _host->_run_on_core(ms_tick, _runtime);
-                        //在某个核心上运行
-                        MUSE_REGISTRY::get_ptr()->runEnsured(_host, rpc_name, &(sev.message_->request->get_serializer()));
-                        //调用 RPC 服务端
-                        ResponseData *rp = MUSE_REGISTRY::get_ptr()->convert_result_to_response(&(sev.message_->request->get_serializer()));
-                        //返回结果
-                        sev.message_->response = rp;
-                    }else{
-                        //函数不存在
-                        ResponseData *rp = MUSE_REGISTRY::get_ptr()->function_not_exist_response();
-                        //返回结果
-                        sev.message_->response = rp;
-                    }
-                    //服务端已经触发
-                    sev.message_->rpc_server_is_trigger = true;
                 }
-            } else if (sev.event_type_ == simulator_net_event_type::RPC_RESPONSE_FINISH){
-                //服务器已经处理完毕，等待回调
-
-
+                //有主机空闲核心可以运行任务
+                std::string rpc_name;
+                //重置读取点
+                sev.message_->request->get_serializer().reset();
+                //解析 RPC 函数名
+                sev.message_->request->get_serializer().output(rpc_name);
+                //解析 RPC 函数名, 而且必须这样做，因为序列化器会移动读取点。不然直接调用会出问题。
+                if (MUSE_REGISTRY::get_ptr()->check(rpc_name)){
+                    //运行调用任务
+                    auto _runtime = MUSE_CPU_PROCESSING_MATRIX::get_ptr()->get_server(rpc_name);
+                    //_runtime 活动CPU运行时间
+                    _host->_run_on_core(ms_tick, _runtime);
+                    //在某个核心上运行
+                    MUSE_REGISTRY::get_ptr()->runEnsured(_host, rpc_name, &(sev.message_->request->get_serializer()));
+                    //调用 RPC 服务端
+                    ResponseData *rp = MUSE_REGISTRY::get_ptr()->convert_result_to_response(&(sev.message_->request->get_serializer()));
+                    //返回结果
+                    sev.message_->response = rp;
+                }else{
+                    //函数不存在
+                    ResponseData *rp = MUSE_REGISTRY::get_ptr()->function_not_exist_response();
+                    //返回结果
+                    sev.message_->response = rp;
+                }
+                //服务端已经触发
+                sev.message_->rpc_server_is_trigger = true;
+                _host->_add_task(sev.message_);
                 return true;
-            }else {
-
+            } else if (sev.event_type_ == simulator_net_event_type::RPC_RESPONSE_FINISH){
+                //服务器已经处理完毕，并且已经发送完毕了
+                if ( space_cc <= 0){
+                    //没有主机没有空闲核心可以运行任务
+                    return false;
+                }
+                //调用回调函数
+                auto _runtime = MUSE_CPU_PROCESSING_MATRIX::get_ptr()->get_server(sev.message_->request->remote_process_name);
+                //运行回调函数
+                sev.message_->request->trigger_callBack(sev.message_->response);
+                //_runtime 活动CPU运行时间
+                _host->_run_on_core(ms_tick, _runtime);
+                //设置一下，好像没啥意义
+                sev.message_->rpc_client_is_trigger = true;
+                /* 需要回收资源 */
+                delete_message_factory(sev.message_);
+                sev.message_ = nullptr;
+                return true;
             }
             return true;
         });

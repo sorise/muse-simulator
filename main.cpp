@@ -1,5 +1,6 @@
 #include <iostream>
 #include <climits>
+#include <map>
 
 #include "utils/singleton.hpp"
 #include "simulator/simulator.hpp"
@@ -34,7 +35,6 @@ struct A:public Base{
 
 //通用成员函数包装器
 int main() {
-
     MUSE_CPU_PROCESSING_MATRIX::get_ptr()->initial(100, 12000);
     MUSE_HOST_DELAY_MATRIX::get_ptr()->initial(muse::simulator::host_delay_type::Different_Latency, 100, 100);
 
@@ -54,5 +54,6 @@ int main() {
     muse::simulator::simulator _simulator;
     //运行模拟器
     _simulator.run();
+
     return 0;
 }

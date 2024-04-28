@@ -34,9 +34,15 @@ namespace muse::simulator{
     }
 
     auto simulator_net_event_queue::for_each(std::function<bool(simulator_event&)>&& f) -> void{
+        //考虑消息数量，如果数量太多需要 线程池优化
         std::unique_lock lock(mutex_);
-        auto last =std::remove_if(instance_->begin(), instance_->end(), f);
-        instance_->erase(last, instance_->end()); //将后面的无用内存擦除掉
+        if (instance_->size() < MUSE_SIMULATOR_SETTING::NET_EVENT_USE_THREAD_TIMEOUT){
+            auto last =std::remove_if(instance_->begin(), instance_->end(), f);
+            instance_->erase(last, instance_->end()); //将后面的无用内存擦除掉
+        }else{
+
+        }
+
     }
 
 }
