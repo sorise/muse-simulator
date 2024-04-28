@@ -116,6 +116,9 @@ find_library( openssl_Find_Result  ${OpenSSL_LIB_NAME_SSL}     REQUIRED )
 find_library( crypto_Find_Result   ${OpenSSL_LIB_NAME_CRYPTO}  REQUIRED )
 
 add_library(simulator SHARED
+        include/simulator/pool/conf.h
+        include/simulator/pool/executor.cpp
+        include/simulator/pool/pool.cpp
         src/utils/singleton.cpp
         include/serializer/binaryDeserializeView.cpp
         include/serializer/binarySerializer.cpp

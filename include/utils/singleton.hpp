@@ -9,6 +9,7 @@
 #include <memory>
 #include <memory_resource>
 #include <fmt/format.h>
+#include "simulator/pool/pool.hpp"
 #include "utils/toolkits.hpp"
 
 namespace muse::simulator {
@@ -168,6 +169,42 @@ namespace muse::simulator {
         ptr->~T();
         singleton_memory_pool::get_ptr()->deallocate(ptr, sizeof(T));
     }
+
+    template<> class SIMULATOR_CPP_WIN_API singleton_lazy_heap<muse::pool::ThreadPool>{
+    private:
+        singleton_lazy_heap() = default;
+        singleton_lazy_heap(const singleton_lazy_heap&) = default;
+        singleton_lazy_heap& operator=(const singleton_lazy_heap&) = default;
+        ~singleton_lazy_heap()= default;
+    public:
+        static muse::pool::ThreadPool* get_ptr(){
+            std::call_once(_flag, init);
+            return instance_.get();
+        }
+
+        static muse::pool::ThreadPool& get_reference(){
+            std::call_once(_flag, init);
+            return *(instance_);
+        }
+    private:
+        static void init(){
+            instance_ = std::make_unique<muse::pool::ThreadPool>(
+                    2,
+                    8,
+                    12000,
+                    muse::pool::ThreadPoolType::Flexible,
+                    muse::pool::ThreadPoolCloseStrategy::WaitAllTaskFinish,
+                    std::chrono::milliseconds(5000)
+            );
+        }
+
+        static std::once_flag _flag;
+
+        static  std::unique_ptr<muse::pool::ThreadPool> instance_;
+    };
+
+    using singleton_thread_pool = muse::simulator::singleton_lazy_heap<muse::pool::ThreadPool>;
+
 }
 
 #endif //MUSE_SIMULATOR_SINGLETON_HPP

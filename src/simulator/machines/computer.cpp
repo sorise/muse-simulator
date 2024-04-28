@@ -78,21 +78,24 @@ namespace muse::simulator{
             message *msg = create_message_factory(this->_ip_address,event);
             if (msg != nullptr){
                 this->network_card_.add_task(msg);
+                //处理故障，如果乜有目标主机，直接使用定时器的方式返回错误 取调用回调函数。
+                // todo
             }else{
                 fmt::println("create_message_factory failed, from {}, to {}, func {}", this->_ip_address, event->ip_address, event->remote_process_name);
             }
         }
     }
 
-    void computer::next_tick(const uint64_t &ms_tick) {
-        this->network_card_.next_tick(ms_tick);
+    void computer::_next_tick(const uint64_t &ms_tick) {
+        this->network_card_.next_tick(ms_tick); //网卡 执行发送任务
+        this->_run_timer(ms_tick);   // 定时器任务运行
     }
 
     void computer::START_UP() {
 
     }
 
-    bool computer::run_timer(const uint64_t& ms_tick) {
+    bool computer::_run_timer(const uint64_t& ms_tick) {
         uint64_t us_tick = ms_tick * 1000;
         //判断是否用空闲的处理器  0 表示有定时器需要触发
         while (this->TIMER.checkTimeout() == 0){
@@ -111,10 +114,18 @@ namespace muse::simulator{
         return true;
     }
 
-    uint32_t computer::get_spare_core(const uint64_t &ms_tick) {
+    uint32_t computer::_get_spare_core(const uint64_t &ms_tick) {
         std::unique_lock lock(this->cpu_mtx_);
-        return cpu_.get_spare_core(ms_tick);
+        return cpu_.get_spare_core_count(ms_tick);
     }
 
+    uint32_t computer::_run_on_core(const uint64_t& ms_tick, const uint64_t &_ms_) {
+        std::unique_lock lock(this->cpu_mtx_);
+        this->cpu_.carry_on_core(ms_tick, _ms_ * 1000);
+        return 0;
+    }
 
+    bool computer::_add_task(message *msg) {
+        return this->network_card_.add_task(msg);
+    }
 }

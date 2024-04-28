@@ -29,8 +29,6 @@ namespace muse::simulator {
         //方法存储中心，使用hash 列表 存储, 参数是 BinarySerializer
         //是否需要线程安全，互斥量
         std::unordered_map<std::string, std::shared_ptr<any_controller>> concurrent_dictionary;
-    public:
-        registry() = default;
 
         // 用tuple做参数调用函数模板类
         template<typename Function, typename C, typename Tuple, std::size_t... Index>
@@ -122,6 +120,8 @@ namespace muse::simulator {
         {
             callProxy(fun, caller, serializer);
         }
+    public:
+        registry() = default;
 
         /* 成员函数注册 */
         template<typename F>
@@ -139,12 +139,20 @@ namespace muse::simulator {
         bool check(const std::string& name);
 
         /* 执行方法,如果指定方法存在则调用，否则什么也不做 */
-        void runSafely(const std::string& ip_address, const std::string& name,  BinarySerializer *serializer);
+        void runSafely(computer *caller, const std::string& name,  BinarySerializer *serializer);
 
         /* 执行这方法之前，请先调用 check 确认执行的方法已经存在 */
-        void runEnsured(const std::string& ip_address, const std::string& name, BinarySerializer *serializer);
+        void runEnsured(computer *caller, const std::string& name, BinarySerializer *serializer);
 
-        static ResponseData convert_result_to_response(BinarySerializer *serializer);
+        static ResponseData* convert_result_to_response(BinarySerializer *serializer);
+
+        static ResponseData* function_not_exist_response();
+
+        static ResponseData* parameter_error_response();
+
+        static ResponseData* server_inner_exception_response();
+
+        static ResponseData* net_not_support_response();
 
         uint64_t get_remote_functions();
     };

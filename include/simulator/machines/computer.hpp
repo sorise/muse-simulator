@@ -15,6 +15,10 @@
 namespace muse::simulator{
     class SIMULATOR_CPP_WIN_API network_dispatcher;
 
+    /*
+     * 模拟显示中的计算机
+     * _function 表示为模拟器调度的方法，不应该由用户主动调用，否则会导致模拟失败。
+     * */
     class SIMULATOR_CPP_WIN_API computer{
     private:
         std::string _ip_address;
@@ -66,15 +70,19 @@ namespace muse::simulator{
 
         void RPC_CALL(TransmitterEvent* event);
 
-        void next_tick(const uint64_t& ms_tick);
-
+        /* 进入下一个时间 */
+        auto _next_tick(const uint64_t& ms_tick) ->void;
         /* 运行定时器 */
-        bool run_timer(const uint64_t& ms_tick);
-
-        uint32_t get_spare_core(const uint64_t& ms_tick);
+        auto _run_timer(const uint64_t& ms_tick) ->bool;
+        //看空闲核数量
+        auto _get_spare_core(const uint64_t& ms_tick) ->uint32_t;
+        /* 传递 毫秒时间 */
+        auto _run_on_core(const uint64_t& ms_tick, const uint64_t &_ms_) ->uint32_t;
+        //给网卡添加一个传输任务
+        auto _add_task(message* msg) ->bool;
 
         //启动程序的函数
-        virtual void START_UP();
+        virtual void START_UP() = 0;
     };
 }
 #endif //MUSE_SIMULATOR_COMPUTER_HPP

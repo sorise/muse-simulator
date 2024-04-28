@@ -29,10 +29,11 @@ namespace muse::simulator{
     }
 
     void host::START_UP() {
-        this->TIMER.setTimeout("TIMER/VOTE", 1000, &host::get_vote, this);
+        //this->TIMER.setTimeout("TIMER/VOTE", 1000, &host::get_vote, this);
+        fmt::println("{} host start up", this->get_ip_address());
     }
 
     host::~host() {
-        printf("host disappear !\n");
+        //printf("host disappear !\n");
     }
 }

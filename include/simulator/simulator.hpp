@@ -2,12 +2,13 @@
 #define MUSE_SIMULATOR_SIMULATOR_HPP
 
 #include <cstdint>
-#include "machines/central_processing_unit.hpp"
-#include "machines/registry.hpp"
-#include "machines/cpu_processing_matrix.hpp"
-#include "machines/host_delay_matrix.hpp"
-#include "simulator_object.hpp"
 #include "fmt/format.h"
+#include "simulator_object.hpp"
+#include "machines/registry.hpp"
+#include "machines/host_delay_matrix.hpp"
+#include "machines/cpu_processing_matrix.hpp"
+#include "machines/central_processing_unit.hpp"
+#include "simulator/pool/pool.hpp"
 
 namespace muse::simulator{
     class SIMULATOR_CPP_WIN_API simulator: public simulator_object {
@@ -25,6 +26,12 @@ namespace muse::simulator{
         simulator() = default;
 
         ~simulator() override;
+
+        static std::chrono::microseconds get_tick(){
+            std::chrono::time_point<std::chrono::system_clock> tp =
+                    std::chrono::time_point_cast<std::chrono::microseconds>(std::chrono::system_clock::now());
+            return std::chrono::duration_cast<std::chrono::microseconds>(tp.time_since_epoch());
+        }
     };
 }
 

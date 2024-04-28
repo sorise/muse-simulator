@@ -9,34 +9,84 @@ namespace muse::simulator{
         if (MUSE_NETWORK_DISPATCHER::get_reference().get_host_count() <= 1){
             fmt::println("error 1, simulating the world requires more than two hosts. current host count: {}.", MUSE_NETWORK_DISPATCHER::get_reference().get_host_count());
         }
+        //检查是否有RPC绑定，没有就不会有网络交互
         if (MUSE_REGISTRY::get_reference().get_remote_functions() < 1){
             fmt::println("error 2, simulating the world requires more than two hosts. current host count: {}.", MUSE_NETWORK_DISPATCHER::get_reference().get_host_count());
         }
         //调用初始化方法
         const auto hosts =  MUSE_NETWORK_DISPATCHER::get_ptr()->get_hosts_list();
-        //需要并行算法
-        std::for_each(hosts.begin(), hosts.end(), [=](auto host_ptr){
-            host_ptr->START_UP();
-        });
+        if (hosts.size() > 1024){
+            //主机数量太多就需要 需要并行算法优化
+            std::list<std::shared_ptr<muse::pool::ExecutorToken<void>>> futures(hosts.size());
+            for (const auto& host_ptr: hosts) {
+                auto token = muse::pool::make_executor([](computer* cmp){
+                    cmp->START_UP();//启动主机
+                }, host_ptr.get());
+                singleton_thread_pool::get_ptr()->commit_executor(token);
+                futures.push_back(token);
+            }
+            for (const auto& fu: futures) {
+                fu->get();
+            }
+        }else{
+            //单线程即可
+            std::for_each(hosts.begin(), hosts.end(), [=](auto host_ptr){
+                host_ptr->START_UP();
+            });
+        }
     }
 
     void simulator::simulator_operating_core() {
+        //当前模拟世界时间
         uint64_t ms_tick = SIMULATOR_WORLD_STATE::get_ptr()->get_tick();
+        //网络中的所有主机
         const auto hosts =  MUSE_NETWORK_DISPATCHER::get_ptr()->get_hosts_list();
-        //先执行网络事件
+
+        //先执行主机内部 网络传输和运行任务
         std::for_each(hosts.begin(), hosts.end(), [=](auto host_ptr){
-            host_ptr->next_tick(ms_tick);
+            host_ptr->_next_tick(ms_tick);
         });
 
+        //执行网络事件
         simulator_net_event_queue::for_each([=](simulator_event& sev)->bool {
             if (sev.event_type_ == simulator_net_event_type::RPC_REQUEST_FINISH){
                 //已经完成传输需要等待服务端进行处理
-                auto host = MUSE_NETWORK_DISPATCHER::get_reference().get_host(sev.message_->acceptor_id);
-                if (host->get_spare_core(ms_tick)){
-
+                auto _host = MUSE_NETWORK_DISPATCHER::get_reference().get_host(sev.message_->acceptor_id);
+                //获取目标主机
+                auto space_cc = _host->_get_spare_core(ms_tick);
+                if ( space_cc <= 0){
+                    //没有主机没有空闲核心可以运行任务
+                    return false;
+                }else{
+                    //有主机空闲核心可以运行任务
+                    std::string rpc_name;
+                    sev.message_->request->get_serializer().reset();
+                    //解析 RPC 函数名
+                    sev.message_->request->get_serializer().output(rpc_name);
+                    //解析 RPC 函数名
+                    if (MUSE_REGISTRY::get_ptr()->check(rpc_name)){
+                        //运行调用任务
+                        auto _runtime = MUSE_CPU_PROCESSING_MATRIX::get_ptr()->get_server(rpc_name);
+                        //_runtime 活动CPU运行时间
+                        _host->_run_on_core(ms_tick, _runtime);
+                        //在某个核心上运行
+                        MUSE_REGISTRY::get_ptr()->runEnsured(_host, rpc_name, &(sev.message_->request->get_serializer()));
+                        //调用 RPC 服务端
+                        ResponseData *rp = MUSE_REGISTRY::get_ptr()->convert_result_to_response(&(sev.message_->request->get_serializer()));
+                        //返回结果
+                        sev.message_->response = rp;
+                    }else{
+                        //函数不存在
+                        ResponseData *rp = MUSE_REGISTRY::get_ptr()->function_not_exist_response();
+                        //返回结果
+                        sev.message_->response = rp;
+                    }
+                    //服务端已经触发
+                    sev.message_->rpc_server_is_trigger = true;
                 }
-                return true;
             } else if (sev.event_type_ == simulator_net_event_type::RPC_RESPONSE_FINISH){
+                //服务器已经处理完毕，等待回调
+
 
                 return true;
             }else {
