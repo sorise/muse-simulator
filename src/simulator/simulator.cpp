@@ -47,10 +47,29 @@ namespace muse::simulator{
         //网络中的所有主机
         const auto hosts =  MUSE_NETWORK_DISPATCHER::get_ptr()->get_hosts_list();
 
-        //先执行主机内部 网络传输和运行任务
-        std::for_each(hosts.begin(), hosts.end(), [ms_tick](auto host_ptr){
-            host_ptr->_next_tick(ms_tick);
-        });
+        if (hosts.size() > MUSE_SIMULATOR_SETTING::HOST_USE_THREAD_COUNT){
+            //主机数量太多就需要 需要并行算法优化
+            std::list<std::shared_ptr<muse::pool::ExecutorToken<void>>> futures(hosts.size());
+
+            for (const auto& host_ptr: hosts) {
+                auto token = muse::pool::make_executor([](computer* cmp, const uint64_t& _ms_tick)->void{
+                    cmp->_next_tick(_ms_tick);//启动主机
+                }, host_ptr.get(),std::ref(ms_tick));
+
+                singleton_thread_pool::get_ptr()->commit_executor(token);
+                futures.push_back(token);
+            }
+
+            //等待
+            for (const auto& fu: futures) {
+                fu->get();
+            }
+        }else{
+            //先执行主机内部 网络传输和运行任务
+            std::for_each(hosts.begin(), hosts.end(), [ms_tick](auto host_ptr){
+                host_ptr->_next_tick(ms_tick);
+            });
+        }
 
         //执行网络事件
         simulator_net_event_queue::for_each([=](simulator_event& sev)->bool {

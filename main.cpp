@@ -10,7 +10,6 @@
 
 //通用成员函数包装器
 int main() {
-
     MUSE_CPU_PROCESSING_MATRIX::get_ptr()->initial(20, 40);
 
     MUSE_CPU_PROCESSING_MATRIX::get_ptr()->set_RPC_processing_time_Server("RPC:Vote",20, 40);

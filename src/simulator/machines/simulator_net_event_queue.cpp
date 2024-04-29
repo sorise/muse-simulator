@@ -40,9 +40,10 @@ namespace muse::simulator{
             auto last =std::remove_if(instance_->begin(), instance_->end(), f);
             instance_->erase(last, instance_->end()); //将后面的无用内存擦除掉
         }else{
-
+            //主机数量太多就需要 需要并行算法优化
+            auto last = std::remove_if(std::execution::par, instance_->begin(), instance_->end(), f);
+            instance_->erase(last, instance_->end()); //将后面的无用内存擦除掉
         }
-
     }
 
 }

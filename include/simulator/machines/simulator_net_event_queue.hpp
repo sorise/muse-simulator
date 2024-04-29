@@ -3,6 +3,7 @@
 
 #include <mutex>
 #include <shared_mutex>
+#include <execution>
 
 #include "message.hpp"
 #include "simulator_setting.hpp"
@@ -46,10 +47,6 @@ namespace muse::simulator {
         /*
          * 返回值决定是否将当前的 simulator_event 删除
          * */
-        //static auto for_each(std::function<bool(simulator_event&)>& f) -> void;
-
-        //static auto for_each(const std::function<bool(simulator_event&)>& f) -> void;
-
         static auto for_each(std::function<bool(simulator_event&)>&& f) -> void;
     };
 }
