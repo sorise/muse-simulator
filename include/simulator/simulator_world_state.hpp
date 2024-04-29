@@ -23,6 +23,10 @@ namespace muse::simulator{
 
     template class  SIMULATOR_CPP_WIN_API muse::simulator::singleton_lazy_heap<muse::simulator::simulator_world_state>;
 
-    #define SIMULATOR_WORLD_STATE muse::simulator::singleton_lazy_heap<muse::simulator::simulator_world_state>
+    #define MUSE_SIMULATOR_WORLD_STATE muse::simulator::singleton_lazy_heap<muse::simulator::simulator_world_state>
+
+    static auto get_simulator_tick_ms() -> uint64_t{
+        return MUSE_SIMULATOR_WORLD_STATE::get_ptr()->get_tick();
+    }
 }
 #endif //MUSE_SIMULATOR_SIMULATOR_WORLD_STATE_HPP

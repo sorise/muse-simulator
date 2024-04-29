@@ -77,9 +77,10 @@ namespace muse::simulator{
         if (event != nullptr){
             message *msg = create_message_factory(this->_ip_address,event);
             if (msg != nullptr){
+                if (event->get_ip_address() == this->_ip_address){
+                    throw std::logic_error("error 4, RPC request object is the current computer");
+                }
                 this->network_card_.add_task(msg);
-                //处理故障，如果乜有目标主机，直接使用定时器的方式返回错误 取调用回调函数。
-                // todo
             }else{
                 fmt::println("create_message_factory failed, from {}, to {}, func {}", this->_ip_address, event->ip_address, event->remote_process_name);
             }
@@ -114,7 +115,7 @@ namespace muse::simulator{
         return true;
     }
 
-    uint32_t computer::_get_spare_core(const uint64_t &ms_tick) {
+    uint32_t computer::_get_spare_core_count(const uint64_t &ms_tick) {
         std::unique_lock lock(this->cpu_mtx_);
         return cpu_.get_spare_core_count(ms_tick);
     }

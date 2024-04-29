@@ -140,7 +140,7 @@ namespace muse::simulator {
         if (place == nullptr){
             return nullptr;
         }
-        fmt::print("new_by_pool:{}\n", sizeof(T));
+        //fmt::print("new_by_pool:{}\n", sizeof(T));
         T* real = new(place) T(std::forward<Args>(args)...); //定位 new
         return real;
     }

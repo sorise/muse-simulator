@@ -7,11 +7,13 @@ namespace muse::simulator{
     void simulator::initialize_simulator() {
         //注册主机
         if (MUSE_NETWORK_DISPATCHER::get_reference().get_host_count() <= 1){
-            fmt::println("error 1, simulating the world requires more than two hosts. current host count: {}.", MUSE_NETWORK_DISPATCHER::get_reference().get_host_count());
+            auto message = fmt::format("error 1, simulating the world requires more than two hosts. current host count: {}.", MUSE_NETWORK_DISPATCHER::get_reference().get_host_count());
+            throw std::logic_error(message);
         }
         //检查是否有RPC绑定，没有就不会有网络交互
         if (MUSE_REGISTRY::get_reference().get_remote_functions() < 1){
-            fmt::println("error 2, simulating the world requires more than two hosts. current host count: {}.", MUSE_NETWORK_DISPATCHER::get_reference().get_host_count());
+            auto message = fmt::format("error 2, simulating the world requires more than two hosts. current host count: {}.", MUSE_NETWORK_DISPATCHER::get_reference().get_host_count());
+            throw std::logic_error(message);
         }
         //调用初始化方法
         const auto hosts =  MUSE_NETWORK_DISPATCHER::get_ptr()->get_hosts_list();
@@ -40,22 +42,41 @@ namespace muse::simulator{
 
     void simulator::simulator_operating_core() {
         //当前模拟世界时间
-        uint64_t ms_tick = SIMULATOR_WORLD_STATE::get_ptr()->get_tick();
+        uint64_t ms_tick = MUSE_SIMULATOR_WORLD_STATE::get_ptr()->get_tick();
+        //mt::print("simulator word time:{} minute {} seconds {}ms \n",ms_tick/60000, ms_tick/1000,ms_tick);
         //网络中的所有主机
         const auto hosts =  MUSE_NETWORK_DISPATCHER::get_ptr()->get_hosts_list();
 
         //先执行主机内部 网络传输和运行任务
-        std::for_each(hosts.begin(), hosts.end(), [=](auto host_ptr){
+        std::for_each(hosts.begin(), hosts.end(), [ms_tick](auto host_ptr){
             host_ptr->_next_tick(ms_tick);
         });
 
         //执行网络事件
         simulator_net_event_queue::for_each([=](simulator_event& sev)->bool {
-            //已经完成传输需要等待服务端进行处理
-            auto _host = MUSE_NETWORK_DISPATCHER::get_reference().get_host(sev.message_->acceptor_id);
-            //获取目标主机
-            auto space_cc = _host->_get_spare_core(ms_tick);
             if (sev.event_type_ == simulator_net_event_type::RPC_REQUEST_FINISH){
+                //已经完成传输需要等待服务端进行处理
+                auto _host = MUSE_NETWORK_DISPATCHER::get_reference().get_host(sev.message_->acceptor_id);
+                //目标主机不存在，发出去就有问题
+                if (_host == nullptr){
+                    auto _sender = MUSE_NETWORK_DISPATCHER::get_reference().get_host(sev.message_->sender_ip);
+                    //函数不存在
+                    ResponseData *rp = MUSE_REGISTRY::get_ptr()->net_not_support_response();
+                    //返回结果
+                    sev.message_->response = rp;
+                    //运行回调函数
+                    sev.message_->request->trigger_callBack(sev.message_->response);
+                    //_runtime 活动CPU运行时间
+                    auto _runtime = MUSE_CPU_PROCESSING_MATRIX::get_ptr()->get_server(sev.message_->request->remote_process_name);
+                    //运行
+                    _sender->_run_on_core(ms_tick, _runtime);
+                    /* 需要回收资源 */
+                    delete_message_factory(sev.message_);
+                    //回收消息
+                    return true;
+                }
+                //获取目标主机
+                auto space_cc = _host->_get_spare_core_count(ms_tick);
                 if ( space_cc <= 0){
                     //没有主机没有空闲核心可以运行任务
                     return false;
@@ -66,6 +87,8 @@ namespace muse::simulator{
                 sev.message_->request->get_serializer().reset();
                 //解析 RPC 函数名
                 sev.message_->request->get_serializer().output(rpc_name);
+                //设置相应需要间隔多久发送
+                sev.message_->cpu_processing_us = MUSE_CPU_PROCESSING_MATRIX::get_ptr()->get_server(rpc_name);
                 //解析 RPC 函数名, 而且必须这样做，因为序列化器会移动读取点。不然直接调用会出问题。
                 if (MUSE_REGISTRY::get_ptr()->check(rpc_name)){
                     //运行调用任务
@@ -90,12 +113,19 @@ namespace muse::simulator{
                 return true;
             } else if (sev.event_type_ == simulator_net_event_type::RPC_RESPONSE_FINISH){
                 //服务器已经处理完毕，并且已经发送完毕了
+                auto _host = MUSE_NETWORK_DISPATCHER::get_reference().get_host(sev.message_->sender_ip);
+                //获取目标主机
+                auto space_cc = _host->_get_spare_core_count(ms_tick);
                 if ( space_cc <= 0){
                     //没有主机没有空闲核心可以运行任务
                     return false;
                 }
                 //调用回调函数
                 auto _runtime = MUSE_CPU_PROCESSING_MATRIX::get_ptr()->get_server(sev.message_->request->remote_process_name);
+                //出问题了
+                if (sev.message_->response == nullptr){
+                    throw std::runtime_error("response is null in simulator_operating_core.simulator_net_event_queue::for_each.");
+                }
                 //运行回调函数
                 sev.message_->request->trigger_callBack(sev.message_->response);
                 //_runtime 活动CPU运行时间
@@ -104,16 +134,20 @@ namespace muse::simulator{
                 sev.message_->rpc_client_is_trigger = true;
                 /* 需要回收资源 */
                 delete_message_factory(sev.message_);
+                //重置一下
                 sev.message_ = nullptr;
                 return true;
             }
             return true;
         });
-
     }
 
     bool simulator::stop_simulator_condition() {
-        return true;
+        if (MUSE_SIMULATOR_WORLD_STATE::get_ptr()->get_tick() > 1000){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     void simulator::simulator_report() {
@@ -121,6 +155,10 @@ namespace muse::simulator{
     }
 
     void simulator::simulator_clean_up_resources() {
+
+    }
+
+    void simulator::set_stop_condition(std::function<bool(void)>&& f){
 
     }
 }

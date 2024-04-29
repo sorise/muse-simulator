@@ -85,3 +85,30 @@ for (int i = 0; i < 100; ++i) {
     printf("------------------------------------------------\n");
 }
 ```
+
+
+### 测试
+
+```cpp
+struct Base{
+    Base(){
+        std::cout << "Base Constructor" << std::endl;
+    }
+
+    virtual ~Base(){
+        std::cout << "Base Destructor" << std::endl;
+    };
+};
+
+struct A:public Base{
+    A(){
+        std::cout << "A Constructor" << std::endl;
+    }
+    int add(int a, int b){
+        return  a + b;
+    }
+    ~A() override{
+        std::cout << "A Destructor" << std::endl;
+    }
+};
+```

@@ -4,7 +4,7 @@ namespace muse::simulator {
 
 
     time_t computer_simulator_timer::GetTick() {
-        return SIMULATOR_WORLD_STATE::get_reference().get_tick();
+        return MUSE_SIMULATOR_WORLD_STATE::get_reference().get_tick();
     }
 
     computer_simulator_timer::computer_simulator_timer() = default;

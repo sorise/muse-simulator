@@ -26,7 +26,7 @@ namespace muse::simulator {
         auto ptr = muse::simulator::singleton_memory_pool::get_ptr()->allocate(count);
 
         std::shared_ptr<char[]> rdt((char*)ptr, [total = count](char *ptr){
-            fmt::print("release count {}", total);
+            //fmt::print("release count {}", total);
             muse::simulator::singleton_memory_pool::get_ptr()->deallocate(ptr, total);
         });
 
@@ -57,7 +57,7 @@ namespace muse::simulator {
         auto ptr = muse::simulator::singleton_memory_pool::get_ptr()->allocate(count);
 
         std::shared_ptr<char[]> rdt((char*)ptr, [total = count](char *ptr){
-            fmt::print("release count {}", total);
+            //fmt::print("release count {}", total);
             muse::simulator::singleton_memory_pool::get_ptr()->deallocate(ptr, total);
         });
 
@@ -80,7 +80,7 @@ namespace muse::simulator {
         auto ptr = muse::simulator::singleton_memory_pool::get_ptr()->allocate(count);
 
         std::shared_ptr<char[]> rdt((char*)ptr, [total = count](char *ptr){
-            fmt::print("release count {}", total);
+            //fmt::print("release count {}", total);
             muse::simulator::singleton_memory_pool::get_ptr()->deallocate(ptr, total);
         });
 
@@ -103,7 +103,7 @@ namespace muse::simulator {
         auto ptr = muse::simulator::singleton_memory_pool::get_ptr()->allocate(count);
 
         std::shared_ptr<char[]> rdt((char*)ptr, [total = count](char *ptr){
-            fmt::print("release count {}", total);
+            //fmt::print("release count {}", total);
             muse::simulator::singleton_memory_pool::get_ptr()->deallocate(ptr, total);
         });
 
@@ -127,7 +127,7 @@ namespace muse::simulator {
         auto ptr = muse::simulator::singleton_memory_pool::get_ptr()->allocate(count);
 
         std::shared_ptr<char[]> rdt((char*)ptr, [total = count](char *ptr){
-            fmt::print("release count {}", total);
+            //fmt::print("release count {}", total);
             muse::simulator::singleton_memory_pool::get_ptr()->deallocate(ptr, total);
         });
 

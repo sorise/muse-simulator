@@ -3,19 +3,22 @@
 namespace muse::simulator{
 
     auto host::get_vote() -> void {
-        auto ev = new_by_pool<TransmitterEvent>("215.56.21.2",15000);
-        ev->call<int>("rpc::vote");
-        ev->set_callBack([&](Outcome<int> r){
-            if (r.isOK()){
-                fmt::println("vote {}", r.value);
-            }else{
-                fmt::println("get vote failed, {} {}", (short)r.protocolReason, r.response.getReason());
-            }
-        });
-        this->RPC_CALL(ev);
+        if (this->get_ip_address() != "215.53.2.1"){
+            auto ev = new_by_pool<TransmitterEvent>("215.53.2.1",15000);
+            ev->call<int>("RPC:Vote");
+            ev->set_callBack([&](Outcome<int> r){
+                if (r.isOK()){
+                    fmt::println("{}/ {} get vote {}", get_simulator_tick_ms() ,this->get_ip_address(), r.value);
+                }else{
+                    fmt::println("get vote failed, {} {}", (short)r.protocolReason, r.response.getReason());
+                }
+            });
+            this->RPC_CALL(ev);
+        }
     }
 
     auto host::vote() -> int {
+        fmt::println("{}/ {} put vote {}", get_simulator_tick_ms() ,this->get_ip_address(), 10);
         return 10;
     }
 
@@ -29,11 +32,12 @@ namespace muse::simulator{
     }
 
     void host::START_UP() {
-        //this->TIMER.setTimeout("TIMER/VOTE", 1000, &host::get_vote, this);
-        fmt::println("{} host start up", this->get_ip_address());
+        if (is_running){
+            this->TIMER.setTimeout("TIMER/VOTE", 1, &host::get_vote, this);
+        }
     }
 
-    host::~host() {
-        //printf("host disappear !\n");
+    host::~host(){
+        printf("host disappear !\n");
     }
 }

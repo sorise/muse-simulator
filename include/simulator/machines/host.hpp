@@ -3,8 +3,9 @@
 
 #include <utility>
 
-#include "utils/toolkits.hpp"
 #include "computer.hpp"
+#include "utils/toolkits.hpp"
+#include "simulator/simulator_world_state.hpp"
 
 namespace muse::simulator{
     //定义任务

@@ -67,15 +67,18 @@ namespace muse::simulator{
         if (!this->initial_state_){
             throw std::logic_error("The host_delay_matrix has not yet been initialized by calling the initial method");
         };
-        std::string key = host_a_ip_address + ":" + host_b_ip_address;
+        std::string key1 = host_a_ip_address + ":" + host_b_ip_address;
+        std::string key2 = host_a_ip_address + ":" + host_b_ip_address;
         if (_delay_down_ms > _delay_up_ms){
             throw std::logic_error("The _delay_down_ms must be less than or equal to the _delay_up_ms");
         }
         bool is_equal = (_delay_down_ms == _delay_up_ms);
-        if (this->latency_map_->find(key) == this->latency_map_->end()){
-            this->latency_map_->emplace(key, std::make_tuple(_delay_down_ms, _delay_up_ms, is_equal));
+        if (this->latency_map_->find(key1) == this->latency_map_->end()){
+            this->latency_map_->emplace(key1, std::make_tuple(_delay_down_ms, _delay_up_ms, is_equal));
+            this->latency_map_->emplace(key2, std::make_tuple(_delay_down_ms, _delay_up_ms, is_equal));
         }else{
-            this->latency_map_->at(key) = std::make_tuple(_delay_down_ms, _delay_up_ms,is_equal);
+            this->latency_map_->at(key1) = std::make_tuple(_delay_down_ms, _delay_up_ms,is_equal);
+            this->latency_map_->at(key2) = std::make_tuple(_delay_down_ms, _delay_up_ms,is_equal);
         }
     }
 

@@ -11,10 +11,10 @@ auto r= _timer.setTimeout(3000, [](int a, int b){
     fmt::println("a + b = {}", a + b);
 },19,215);
 
-auto ptr = SIMULATOR_WORLD_STATE::get_ptr();
+auto ptr = MUSE_SIMULATOR_WORLD_STATE::get_ptr();
 
-while (SIMULATOR_WORLD_STATE::get_ptr()->get_tick() < 10000){
+while (MUSE_SIMULATOR_WORLD_STATE::get_ptr()->get_tick() < 10000){
     _timer.runTaskLoop();
-    SIMULATOR_WORLD_STATE::get_ptr()->next_tick();
+    MUSE_SIMULATOR_WORLD_STATE::get_ptr()->next_tick();
 }
 ```

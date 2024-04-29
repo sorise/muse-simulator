@@ -8,7 +8,7 @@ namespace muse::simulator{
     expire_(expire),
     run_times_(1),
     id_(_id){
-        add_time_ = SIMULATOR_WORLD_STATE::get_reference().get_tick();
+        add_time_ = MUSE_SIMULATOR_WORLD_STATE::get_reference().get_tick();
     }
 
     uint64_t timer_node::get_expire() const {

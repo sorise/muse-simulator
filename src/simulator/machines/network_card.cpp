@@ -5,7 +5,7 @@ namespace muse::simulator {
     network_card::network_card(const uint64_t &band_width):band_width_(band_width) {
         this->band_width_current_ms_ = band_width / 1000;
     }
-
+    //to update phase
     bool network_card::add_task(message *msg) {
         if (msg == nullptr){
             return false;
@@ -29,7 +29,8 @@ namespace muse::simulator {
                 lock.unlock();
                 throw std::runtime_error("response is nullptr");
             }
-            response_latency_tasks_set.emplace(msg->cpu_processing_us/1000, msg);
+            uint64_t ms = this->real_tick_ + msg->cpu_processing_us/1000;
+            response_latency_tasks_set.insert({ms, msg});
         }
         //计算剩余可用带宽
         return true;
@@ -58,12 +59,10 @@ namespace muse::simulator {
                 if (start->get_left_bytes() == 0){
                     message* ptr = start->get_message();
                     //如果再请求阶段，需要服务器触发事件
-                    if (ptr->get_rpc_phase() == message_rpc_phase::RPC_REQUEST){
-                        auto random_delay = MUSE_HOST_DELAY_MATRIX::get_ptr()->get_delay(ptr->sender_ip, ptr->acceptor_id);
-                        auto delay = tick + random_delay;
-                        start->set_end_ms(delay);
-                        this->latency_tasks_set.emplace(delay, ptr);
-                    }
+                    auto random_delay = MUSE_HOST_DELAY_MATRIX::get_ptr()->get_delay(ptr->sender_ip, ptr->acceptor_id);
+                    auto delay = tick + random_delay;
+                    //放到延迟队列中
+                    this->latency_tasks_set.emplace(delay, ptr);
                     //发送完毕了
                     start = sending_tasks.erase(start); //摘掉
                     continue;
@@ -108,16 +107,17 @@ namespace muse::simulator {
             auto ptr = it->second;
             if (ptr->get_rpc_phase() == message_rpc_phase::RPC_REQUEST){
                 ptr->rpc_client_is_finish_sending = true;
-            }
-            else if (ptr->get_rpc_phase() == message_rpc_phase::RPC_RESPONSE){
+                simulator_event ev{simulator_net_event_type::RPC_REQUEST_FINISH, ptr};
+                simulator_net_event_queue::insert_event(ev);
+            }else if (ptr->get_rpc_phase() == message_rpc_phase::RPC_RESPONSE){
                 ptr->rpc_server_is_finish_sending = true;
+                simulator_event ev{simulator_net_event_type::RPC_RESPONSE_FINISH, ptr};
+                simulator_net_event_queue::insert_event(ev);
             }else if (ptr->get_rpc_phase() == message_rpc_phase::RPC_FINISH){
                 throw std::runtime_error("class network_card message_rpc_phase is invalid.");
             }
-            simulator_event ev{simulator_net_event_type::RPC_RESPONSE_FINISH, ptr};
             //加入到全局队列中
-            simulator_net_event_queue::insert_event(ev);
-            fmt::print("{} tick:{} add simulator_net_event_queue\n", __FUNCTION__, tick);
+            //fmt::print("{} tick:{} add simulator_net_event_queue\n", __FUNCTION__, tick);
             it = this->latency_tasks_set.erase(it);
         }
     }

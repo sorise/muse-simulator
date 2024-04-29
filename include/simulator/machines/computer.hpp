@@ -75,12 +75,11 @@ namespace muse::simulator{
         /* 运行定时器 */
         auto _run_timer(const uint64_t& ms_tick) ->bool;
         //看空闲核数量
-        auto _get_spare_core(const uint64_t& ms_tick) ->uint32_t;
+        auto _get_spare_core_count(const uint64_t& ms_tick) ->uint32_t;
         /* 传递 毫秒时间 */
         auto _run_on_core(const uint64_t& ms_tick, const uint64_t &_ms_) ->uint32_t;
         //给网卡添加一个传输任务
         auto _add_task(message* msg) ->bool;
-
         //启动程序的函数
         virtual void START_UP() = 0;
     };
