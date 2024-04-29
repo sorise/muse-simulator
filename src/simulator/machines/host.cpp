@@ -38,6 +38,6 @@ namespace muse::simulator{
     }
 
     host::~host(){
-        printf("host disappear !\n");
+        //printf("host disappear !\n");
     }
 }

@@ -25,9 +25,19 @@ namespace muse::simulator{
         void simulator_clean_up_resources() override;
 
         std::function<bool(void)> stop_function_; //停止条件
+
+        std::function<void()> simulator_report_; //停止条件
+
+        std::function<void()> simulator_clean_up_resources_; //停止条件
     public:
+
         /* 设置仿真停止条件。*/
         void set_stop_condition(std::function<bool(void)>&& f);
+
+        /* 生成测试数据 */
+        void set_report(std::function<void()>&& f);
+
+        void set_simulator_end_of_lifecycle(std::function<void()>&& f);
 
         simulator() = default;
 

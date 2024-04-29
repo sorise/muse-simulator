@@ -143,22 +143,30 @@ namespace muse::simulator{
     }
 
     bool simulator::stop_simulator_condition() {
-        if (MUSE_SIMULATOR_WORLD_STATE::get_ptr()->get_tick() > 1000){
-            return true;
-        }else{
-            return false;
-        }
+        if (this->stop_function_) return this->stop_function_();
+        return true;
     }
 
     void simulator::simulator_report() {
-        fmt::println("simulator report");
+        if (this->simulator_report_){
+            this->simulator_report_();
+        }
     }
 
     void simulator::simulator_clean_up_resources() {
-
+        //重新设置时间
+        MUSE_SIMULATOR_WORLD_STATE::get_ptr()->reset_simulator_world();
     }
 
     void simulator::set_stop_condition(std::function<bool(void)>&& f){
+        this->stop_function_ = std::move(f);
+    }
 
+    void simulator::set_report(std::function<void()>&& f){
+        this->simulator_report_ = std::move(f);
+    }
+
+    void simulator::set_simulator_end_of_lifecycle(std::function<void()>&& f){
+        this->simulator_clean_up_resources_ = std::move(f);
     }
 }
