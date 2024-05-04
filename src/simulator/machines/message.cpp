@@ -1,5 +1,3 @@
-#include <utility>
-
 #include "simulator/machines/message.hpp"
 
 namespace muse::simulator {
@@ -55,13 +53,37 @@ namespace muse::simulator {
     uint64_t message::get_message_bytes() const {
         if (get_rpc_phase() == message_rpc_phase::RPC_REQUEST){
             if (request != nullptr){
+                //如果已经设置了request_body_size
+                if (request_tag){
+                    return request_body_size;
+                }
                 return request->get_serializer().byteCount();
             }
         }else if (get_rpc_phase() == message_rpc_phase::RPC_RESPONSE){
             if (response != nullptr){
+                //如果已经设置了response_body_size
+                if (response_tag){
+                    return response_body_size;
+                }
                 return response->getSize();
             }
         }
         return 0;
-    };
+    }
+
+    void message::set_request_body_size(uint64_t _size) {
+        if (!request_tag){
+            //只能设置一次
+            request_tag = true;
+            request_body_size = _size;
+        }
+    }
+
+    void message::set_response_body_size(uint64_t _size) {
+        if (!response_tag){
+            //只能设置一次
+            response_tag = true;
+            response_body_size = _size;
+        }
+    }
 }

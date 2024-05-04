@@ -122,9 +122,7 @@ add_library(simulator SHARED
         src/utils/singleton.cpp
         include/serializer/binaryDeserializeView.cpp
         include/serializer/binarySerializer.cpp
-        src/simulator/consensus/stack_calculator.cpp
         include/serializer/util.cpp
-        src/simulator/db/block.cpp
         src/simulator/encryption/bitcoin_secp256k1.cpp
         src/simulator/encryption/ecc_secp256k1.cpp
         src/simulator/encryption/ecc_sm2_handler.cpp
@@ -149,12 +147,18 @@ add_library(simulator SHARED
         src/simulator/machines/central_processing_unit.cpp
         src/simulator/machines/registry.cpp
         src/simulator/machines/timer_node.cpp
+        src/simulator/machines/ipv4_address.cpp
         src/simulator/machines/simulator_host_event_queue.cpp
         src/simulator/machines/computer_simulator_timer.cpp
         src/simulator/network_dispatcher.cpp
 )
 
 target_link_libraries(simulator PUBLIC fmt museTimer ${OpenSSL_LIB_NAME_SSL} ${OpenSSL_LIB_NAME_CRYPTO} secp256k1)
+
+add_library(experiment SHARED
+        src/experiment/pbft/node.cpp
+
+)
 
 add_executable(runner main.cpp
 

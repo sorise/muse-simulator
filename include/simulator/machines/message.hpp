@@ -6,19 +6,20 @@
 #include "host_delay_matrix.hpp"
 #include "transmitter_event.hpp"
 #include "cpu_processing_matrix.hpp"
+#include "message_rpc_phase.hpp"
 
 #include <cstdint>
 #include <string>
+#include <utility>
 
 namespace muse::simulator{
-
-    enum class message_rpc_phase:uint8_t {
-        RPC_REQUEST = 0,
-        RPC_RESPONSE,
-        RPC_FINISH,
-    };
-
     struct SIMULATOR_CPP_WIN_API message{
+    private:
+        bool request_tag {false};
+        bool response_tag {false};
+        uint64_t request_body_size{0};
+        uint64_t response_body_size{0};
+    public:
         uint64_t cpu_ms{0};           //处理时间 ms
 
         std::string sender_ip;     //发送者 id
@@ -32,6 +33,10 @@ namespace muse::simulator{
         TransmitterEvent* request{nullptr}; /* 等待触发的事件 */
 
         ResponseData* response{nullptr}; /* 服务端响应 */
+
+        void set_request_body_size(uint64_t _size);
+
+        void set_response_body_size(uint64_t _size);
 
         /* 当前RPC 请求是否完成发送 */
         bool rpc_client_is_finish_sending{false};

@@ -129,4 +129,19 @@ namespace muse::simulator{
     bool computer::_add_task(message *msg) {
         return this->network_card_.add_task(msg);
     }
+
+    void computer::RPC_CALL(TransmitterEvent *event, const uint64_t &_request_body_size) {
+        if (event != nullptr){
+            message *msg = create_message_factory(this->_ip_address,event);
+            if (msg != nullptr){
+                if (event->get_ip_address() == this->_ip_address){
+                    throw std::logic_error("error 4, RPC request object is the current computer");
+                }
+                msg->set_request_body_size(_request_body_size);
+                this->network_card_.add_task(msg);
+            }else{
+                fmt::println("create_message_factory failed, from {}, to {}, func {}", this->_ip_address, event->ip_address, event->remote_process_name);
+            }
+        }
+    }
 }

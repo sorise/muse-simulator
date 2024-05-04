@@ -70,6 +70,8 @@ namespace muse::simulator{
 
         void RPC_CALL(TransmitterEvent* event);
 
+        void RPC_CALL(TransmitterEvent* event, const uint64_t& _request_body_size);
+
         /* 进入下一个时间 */
         auto _next_tick(const uint64_t& ms_tick) ->void;
         /* 运行定时器 */
