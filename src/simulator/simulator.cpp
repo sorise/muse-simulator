@@ -111,7 +111,7 @@ namespace muse::simulator{
                 sev.message_->cpu_processing_us = MUSE_CPU_PROCESSING_MATRIX::get_ptr()->get_server(rpc_name);
                 //内容字节长度
                 auto pure_data_count = sev.message_->request->get_serializer().byteCount();
-                bool no_other_args = (pure_data_count ==  sev.message_->request->get_serializer().getReadPosition());
+                (pure_data_count == sev.message_->request->get_serializer().getReadPosition());
                 //解析 RPC 函数名, 而且必须这样做，因为序列化器会移动读取点。不然直接调用会出问题。
                 if (MUSE_REGISTRY::get_ptr()->check(rpc_name)){
                     /* no pro */
