@@ -1,6 +1,7 @@
 #ifndef MUSE_SIMULATOR_SIMULATOR_OBJECT_HPP
 #define MUSE_SIMULATOR_SIMULATOR_OBJECT_HPP
 
+#include "serializer/util.h"
 #include "simulator_world_state.hpp"
 #include <cstdint>
 
@@ -8,7 +9,12 @@ namespace muse::simulator {
 
     //组件协作模式
     class SIMULATOR_CPP_WIN_API simulator_object {
+    protected:
+        muse::serializer::ByteSequence sequence;
     public:
+
+        simulator_object();
+
         //模拟器运行
         void run();
 

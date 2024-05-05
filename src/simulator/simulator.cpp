@@ -1,4 +1,5 @@
 #include "simulator/simulator.hpp"
+#include "simulator/machines/ipv4_address.hpp"
 
 namespace muse::simulator{
 
@@ -108,8 +109,66 @@ namespace muse::simulator{
                 sev.message_->request->get_serializer().output(rpc_name);
                 //设置相应需要间隔多久发送
                 sev.message_->cpu_processing_us = MUSE_CPU_PROCESSING_MATRIX::get_ptr()->get_server(rpc_name);
+                //内容字节长度
+                auto pure_data_count = sev.message_->request->get_serializer().byteCount();
+                bool no_other_args = (pure_data_count ==  sev.message_->request->get_serializer().getReadPosition());
                 //解析 RPC 函数名, 而且必须这样做，因为序列化器会移动读取点。不然直接调用会出问题。
                 if (MUSE_REGISTRY::get_ptr()->check(rpc_name)){
+                    /* no pro */
+                    if (rpc_name.find(network_dispatcher::PREFIX) == 0){
+                        ipv4_address ip(sev.message_->request->get_ip_address());
+                        uint16_t client_port = sev.message_->request->get_port();
+
+                        muse::serializer::BinarySerializer serializer_ip_port;
+                        bool no_other_args = (pure_data_count == sev.message_->request->get_serializer().getReadPosition());
+                        if (no_other_args){
+                            serializer_ip_port.input(std::make_tuple(ip,client_port));
+                        }else{
+                            serializer_ip_port.inputArgs(ip, client_port);
+                        }
+                        //新的数据
+                        auto new_pure_data_count = pure_data_count + serializer_ip_port.byteCount();
+                        //重写分片
+                        auto store = singleton_memory_pool::get_ptr()->allocate(new_pure_data_count);
+
+                        std::shared_ptr<char[]> dt((char*)store, [=](char *ptr){
+                            singleton_memory_pool::get_ptr()->deallocate(ptr, new_pure_data_count);
+                        });
+                        //复制数据
+                        std::memcpy(store, sev.message_->request->get_serializer().getBinaryStream(), pure_data_count);
+                        //复制数据
+                        std::memcpy((char*)store + pure_data_count, serializer_ip_port.getBinaryStream(), serializer_ip_port.byteCount());
+
+                        //有其他参数需要修改长度
+                        if (!no_other_args){
+                            auto pos = sev.message_->request->get_serializer().getReadPosition() + sizeof(muse::serializer::BinaryDataType);
+                            auto char_pos = (char*)dt.get() + pos;
+
+                            muse::serializer::BinarySerializer::Tuple_Element_Length
+                                    tpl_size = *reinterpret_cast<uint16_t *>(char_pos); //元祖长度
+                            //如果当前机器是大端序
+                            // 小端序 ---> 大端序
+                            if (this->sequence == muse::serializer::ByteSequence::BigEndian){
+                                auto first = (char*)&tpl_size;
+                                auto last = first + sizeof(muse::serializer::BinarySerializer::Tuple_Element_Length);
+                                std::reverse(first, last);
+                            }
+                            tpl_size += 2; // 把数组长度  + 2
+                            //如果是大端序，数据插回去
+                            // 大端序 ---> 小端序
+                            if (this->sequence == muse::serializer::ByteSequence::BigEndian){
+                                auto first = (char*)&tpl_size;
+                                auto last = first + sizeof(muse::serializer::BinarySerializer::Tuple_Element_Length);
+                                std::reverse(first, last);
+                            }
+                            //覆盖原来的数组长度
+                            std::memcpy(char_pos, (char*)&tpl_size, sizeof(muse::serializer::BinarySerializer::Tuple_Element_Length));
+                        }
+
+                        sev.message_->request->get_serializer().clear();
+                        sev.message_->request->get_serializer().write(dt.get(),new_pure_data_count);
+                        sev.message_->request->get_serializer().output(rpc_name);
+                    }
                     //运行调用任务
                     auto _runtime = MUSE_CPU_PROCESSING_MATRIX::get_ptr()->get_server(rpc_name);
                     //_runtime 活动CPU运行时间
@@ -120,7 +179,8 @@ namespace muse::simulator{
                     ResponseData *rp = MUSE_REGISTRY::get_ptr()->convert_result_to_response(&(sev.message_->request->get_serializer()));
                     //返回结果
                     sev.message_->response = rp;
-                }else{
+                }
+                else{
                     //函数不存在
                     ResponseData *rp = MUSE_REGISTRY::get_ptr()->function_not_exist_response();
                     //返回结果

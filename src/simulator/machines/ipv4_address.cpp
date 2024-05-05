@@ -71,4 +71,8 @@ namespace muse::simulator{
         return true;
     }
 
+    ipv4_address::ipv4_address(): ip_value_(0) {
+
+    }
+
 }

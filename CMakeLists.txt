@@ -115,10 +115,12 @@ link_directories("${LevelDB_Link_Directory}"     )
 find_library( openssl_Find_Result  ${OpenSSL_LIB_NAME_SSL}     REQUIRED )
 find_library( crypto_Find_Result   ${OpenSSL_LIB_NAME_CRYPTO}  REQUIRED )
 
+
 add_library(simulator SHARED
         include/simulator/pool/conf.h
         include/simulator/pool/executor.cpp
         include/simulator/pool/pool.cpp
+        include/simulator/network_dispatcher.hpp
         src/utils/singleton.cpp
         include/serializer/binaryDeserializeView.cpp
         include/serializer/binarySerializer.cpp
@@ -157,7 +159,6 @@ target_link_libraries(simulator PUBLIC fmt museTimer ${OpenSSL_LIB_NAME_SSL} ${O
 
 add_library(experiment SHARED
         src/experiment/pbft/node.cpp
-
 )
 
 add_executable(runner main.cpp

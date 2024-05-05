@@ -8,13 +8,19 @@
 #include <stdexcept>
 
 #include "utils/toolkits.hpp"
+#include "serializer/IbinarySerializable.h"
 
 namespace muse::simulator{
     /* 表示一个IPV4 地址 */
-    class SIMULATOR_CPP_WIN_API ipv4_address {
+    class SIMULATOR_CPP_WIN_API ipv4_address: public muse::serializer::IBinarySerializable{
     private:
         uint32_t ip_value_; // 用于存储IPv4地址
     public:
+
+        ipv4_address();
+
+        MUSE_IBinarySerializable(ip_value_);
+
         explicit ipv4_address(const uint32_t & _address): ip_value_(_address) {
 
         }

@@ -19,4 +19,8 @@ namespace muse::simulator{
         //资源清理
         simulator_clean_up_resources();
     }
+
+    simulator_object::simulator_object(): sequence(muse::serializer::getByteSequence()) {
+
+    }
 }

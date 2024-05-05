@@ -17,6 +17,8 @@ namespace muse::simulator {
         return this->hosts.size();
     }
 
+    const std::string network_dispatcher::PREFIX = {"@context/"};
+
     auto network_dispatcher::clear_hosts() -> void {
         std::unique_lock lock(this->mtx);
         this->hosts.clear();

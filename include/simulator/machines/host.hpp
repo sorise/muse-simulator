@@ -3,6 +3,7 @@
 
 #include <utility>
 
+#include "ipv4_address.hpp"
 #include "computer.hpp"
 #include "utils/toolkits.hpp"
 #include "simulator/simulator_world_state.hpp"
@@ -22,7 +23,11 @@ namespace muse::simulator{
         //行为
         auto get_vote() -> void;
 
-        auto vote() -> int;
+        auto get_vote_two() -> void;
+
+        auto vote(ipv4_address _address, uint16_t _port) -> int;
+
+        auto vote_to_other(int i, ipv4_address _address, uint16_t _port) -> int;
 
         void START_UP() override;
 

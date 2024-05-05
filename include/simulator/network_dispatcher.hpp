@@ -21,6 +21,8 @@ namespace muse::simulator {
      * @网络调度器 需要有一个网络节点列表，一个事件队列，一个事件队列锁
      * */
     class SIMULATOR_CPP_WIN_API network_dispatcher {
+    public:
+        static const std::string PREFIX;
     private:
         //那些已经注册了的主机  ip+端口
         std::unordered_map<std::string, std::shared_ptr<muse::simulator::computer>> hosts;
