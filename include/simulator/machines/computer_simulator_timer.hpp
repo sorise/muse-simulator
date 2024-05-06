@@ -2,6 +2,7 @@
 #define MUSE_SIMULATOR_COMPUTER_SIMULATOR_TIMER_HPP
 
 #include <cstdint>
+#include <list>
 #include <set>
 #include <string>
 #include "timer_node.hpp"

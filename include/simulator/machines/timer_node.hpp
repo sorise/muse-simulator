@@ -63,7 +63,7 @@ namespace muse::simulator {
     };
 
     struct SIMULATOR_CPP_WIN_API timer_node_wrapper {
-        friend bool operator < (const timer_node_wrapper &me, const timer_node_wrapper &other);
+        friend  bool operator < (const timer_node_wrapper &me, const timer_node_wrapper &other);
     private:
         std::shared_ptr<timer_node> node;
     public:
@@ -96,13 +96,6 @@ namespace muse::simulator {
         [[nodiscard]] const std::string& get_task_name() const;
     };
 
-    static bool operator < (const timer_node_wrapper &me, const timer_node_wrapper &other){
-        if (me.node->get_expire() < other.node->get_expire()){
-            return true;
-        }else if(me.node->get_expire() > other.node->get_expire()){
-            return false;
-        }
-        return me.node->get_id() < other.node->get_id(); //前插入的在前面 后插入的放在后面
-    }
+
 }
 #endif //MUSE_SIMULATOR_TIMER_NODE_HPP

@@ -124,4 +124,13 @@ namespace muse::simulator{
     const std::string &timer_node_wrapper::get_task_name() const {
         return this->node->get_task_name();
     }
+
+    bool operator<(const timer_node_wrapper &me, const timer_node_wrapper &other) {
+        if (me.node->get_expire() < other.node->get_expire()){
+            return true;
+        }else if(me.node->get_expire() > other.node->get_expire()){
+            return false;
+        }
+        return me.node->get_id() < other.node->get_id(); //前插入的在前面 后插入的放在后面
+    }
 }
