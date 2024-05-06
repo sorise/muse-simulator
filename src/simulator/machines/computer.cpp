@@ -132,7 +132,7 @@ namespace muse::simulator{
 
     void computer::RPC_CALL(TransmitterEvent *event, const uint64_t &_request_body_size) {
         if (event != nullptr){
-            message *msg = create_message_factory(this->_ip_address,event);
+            message *msg = create_message_factory(this->_ip_address, 15000, event);
             if (msg != nullptr){
                 if (event->get_ip_address() == this->_ip_address){
                     throw std::logic_error("error 4, RPC request object is the current computer");

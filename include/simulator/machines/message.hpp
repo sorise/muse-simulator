@@ -24,6 +24,8 @@ namespace muse::simulator{
 
         std::string sender_ip;     //发送者 id
 
+        uint16_t sender_port{0};
+
         std::string acceptor_id;   //接受者 id
 
         uint64_t bytes{0};            //大小、字节
@@ -67,7 +69,7 @@ namespace muse::simulator{
         virtual ~message();
     };
 
-    static message* create_message_factory(const std::string& sender, TransmitterEvent* _request){
+    static message* create_message_factory(const std::string& sender, const uint16_t &port, TransmitterEvent* _request){
         if (_request == nullptr){
             return nullptr;
         }

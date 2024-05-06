@@ -35,12 +35,12 @@ namespace muse::simulator{
 
 
     auto host::vote(ipv4_address _address, uint16_t _port) -> int {
-        fmt::println("{}/ {} put vote {}", get_simulator_tick_ms() ,this->get_ip_address(), 10);
+        fmt::println("{}/ {} put vote {} to {}:{}", get_simulator_tick_ms() ,this->get_ip_address(), 10, _address.to_string(), _port);
         return 10;
     }
 
     auto host::vote_to_other(int i, ipv4_address _address, uint16_t _port) -> int {
-        fmt::println("{}/ {} put vote {}", get_simulator_tick_ms() ,this->get_ip_address(), 10);
+        fmt::println("{}/ {} put vote {} to {}:{}", get_simulator_tick_ms() ,this->get_ip_address(), 10, _address.to_string(), _port);
         return 12 + i;
     }
 
@@ -59,7 +59,7 @@ namespace muse::simulator{
         }
 
         if (is_running){
-            this->TIMER.setTimeout("TIMER/VOTE", 500, &host::get_vote_two, this);
+            this->TIMER.setTimeout("TIMER/VOTE", 100, &host::get_vote_two, this);
         }
     }
 
