@@ -13,7 +13,7 @@ namespace muse::simulator{
                     fmt::println("get vote failed, {} {}", (short)r.protocolReason, r.response.getReason());
                 }
             });
-            this->RPC_CALL(ev);
+            this->RPC_CALL(15000,ev);
         }
     }
 
@@ -29,7 +29,7 @@ namespace muse::simulator{
                     fmt::println("get vote two failed, {} {}", (short)r.protocolReason, r.response.getReason());
                 }
             });
-            this->RPC_CALL(ev);
+            this->RPC_CALL(15000,ev);
         }
     }
 

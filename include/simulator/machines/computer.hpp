@@ -14,7 +14,6 @@
 
 namespace muse::simulator{
     class SIMULATOR_CPP_WIN_API network_dispatcher;
-
     /*
      * 模拟显示中的计算机
      * _function 表示为模拟器调度的方法，不应该由用户主动调用，否则会导致模拟失败。
@@ -68,9 +67,9 @@ namespace muse::simulator{
 
         [[nodiscard]] auto get_cpu_core_number() const -> uint64_t;
 
-        void RPC_CALL(TransmitterEvent* event);
+        void RPC_CALL(const uint16_t& port, TransmitterEvent* event);
 
-        void RPC_CALL(TransmitterEvent* event, const uint64_t& _request_body_size);
+        void RPC_CALL(const uint16_t& port, TransmitterEvent* event, const uint64_t& _request_body_size);
 
         /* 进入下一个时间 */
         auto _next_tick(const uint64_t& ms_tick) ->void;

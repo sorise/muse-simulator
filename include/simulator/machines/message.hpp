@@ -78,6 +78,7 @@ namespace muse::simulator{
         msg_ptr->request = _request;
         msg_ptr->response = nullptr;
         msg_ptr->sender_ip = sender;
+        msg_ptr->sender_port = port;
         msg_ptr->acceptor_id = _request->get_ip_address();
         msg_ptr->bytes = _request->get_serializer().byteCount();
         msg_ptr->cpu_ms = MUSE_CPU_PROCESSING_MATRIX::get_ptr()->get_server(_request->remote_process_name);

@@ -25,6 +25,11 @@ namespace muse::simulator{
 
         }
 
+        ipv4_address(const uint64_t & _address) = delete;
+        ipv4_address(const uint16_t & _address) = delete;
+        ipv4_address(const uint8_t & _address) = delete;
+        ipv4_address(const int & _address) = delete;
+
         explicit ipv4_address(const std::string& _address): ip_value_(0) {
             ip_value_ = string_to_ipv4(_address);
         }

@@ -116,8 +116,8 @@ namespace muse::simulator{
                 if (MUSE_REGISTRY::get_ptr()->check(rpc_name)){
                     /* no pro */
                     if (rpc_name.find(network_dispatcher::PREFIX) == 0){
-                        ipv4_address ip(sev.message_->request->get_ip_address());
-                        uint16_t client_port = sev.message_->request->get_port();
+                        ipv4_address ip(sev.message_->sender_ip);
+                        uint16_t client_port = sev.message_->sender_port;
 
                         muse::serializer::BinarySerializer serializer_ip_port;
                         bool no_other_args = (pure_data_count == sev.message_->request->get_serializer().getReadPosition());
