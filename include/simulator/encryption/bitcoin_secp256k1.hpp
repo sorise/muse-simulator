@@ -1,12 +1,17 @@
 #ifndef MUSE_SIMULATOR_BITCOIN_SECP256K1_HPP
 #define MUSE_SIMULATOR_BITCOIN_SECP256K1_HPP
+
 #ifdef _WIN32
-    #include "openssl/applink.c"
+    #ifndef OPENSSL_LINK_ADD
+        #define OPENSSL_LINK_ADD 1
+        #include "openssl/applink.c"
+    #endif
 #endif
 
 #ifndef OPENSSL_API_COMPAT
     #define OPENSSL_API_COMPAT 0x10100000L
 #endif
+
 #include "secp256k1.h"
 #include "secp256k1_schnorrsig.h"
 #include "openssl/rand.h"
@@ -27,7 +32,6 @@ namespace muse::simulator{
      * @private_key = 32 bytes
      * */
     SIMULATOR_CPP_WIN_API EVP_PKEY* convert_private_key(unsigned char *private_key);
-
 }
 
 #endif //MUSE_SIMULATOR_BITCOIN_SECP256K1_HPP
