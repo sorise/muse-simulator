@@ -47,16 +47,14 @@ else()
     MESSAGE(FATAL_ERROR "didnt support the ${CMAKE_SYSTEM_NAME}.")
 endif()
 
+add_compile_definitions(PUBLIC MCLBN_FP_UNIT_SIZE=8)
+
+add_subdirectory(dependency/bls)
+include_directories(dependency/bls/include)
+
 include(FetchContent)
 
 set(FETCHCONTENT_UPDATES_DISCONNECTED ON)
-
-FetchContent_Declare(
-        muse_timer   #要获取的依赖项的名称
-        GIT_REPOSITORY "git@github.com:sorise/muse-timer.git" # Git仓库地址
-        GIT_TAG main  # 指定要检出的标签或分支
-        GIT_PROGRESS TRUE
-)
 
 FetchContent_Declare(
         fmt   #要获取的依赖项的名称
@@ -72,11 +70,9 @@ FetchContent_Declare(
         GIT_PROGRESS TRUE
 )
 
-FetchContent_MakeAvailable(muse_timer fmt secp256k1)
+FetchContent_MakeAvailable(fmt secp256k1)
 
 ###########--------------------打印下载的库信息------------------------############
-MESSAGE(STATUS "Download ${muse_timer_SOURCE_DIR}")
-MESSAGE(STATUS "Download ${muse_timer_BINARY_DIR}")
 MESSAGE(STATUS "Download ${fmt_SOURCE_DIR}")
 MESSAGE(STATUS "Download ${fmt_BINARY_DIR}")
 MESSAGE(STATUS "Download ${secp256k1_SOURCE_DIR}")
@@ -84,7 +80,6 @@ MESSAGE(STATUS "Download ${secp256k1_BINARY_DIR}")
 ###########--------------------打印下载的库信息------------------------############
 
 # << 外部头文件
-include_directories(${muse_timer_SOURCE_DIR}/include)
 include_directories(${fmt_SOURCE_DIR}/include       )
 include_directories(${secp256k1_SOURCE_DIR}/include )
 include_directories(${OpenSSL_Include_Directory}    )
@@ -103,60 +98,39 @@ link_directories("${LevelDB_Link_Directory}"     )
 find_library( openssl_Find_Result  ${OpenSSL_LIB_NAME_SSL}     REQUIRED )
 find_library( crypto_Find_Result   ${OpenSSL_LIB_NAME_CRYPTO}  REQUIRED )
 
+aux_source_directory(src/simulator/encryption simulator_encryption_list)
+aux_source_directory(src/simulator/machines simulator_machines_list)
+aux_source_directory(include/simulator/pool threads_pool_cpp_list)
+aux_source_directory(include/serializer serializer_cpp_list)
+aux_source_directory(src/simulator simulator_list)
+aux_source_directory(src/utils utils_list)
 
 add_library(simulator SHARED
-        include/simulator/pool/conf.h
-        include/simulator/pool/executor.cpp
-        include/simulator/pool/pool.cpp
-        include/simulator/network_dispatcher.hpp
-        src/utils/singleton.cpp
-        include/serializer/binaryDeserializeView.cpp
-        include/serializer/binarySerializer.cpp
-        include/serializer/util.cpp
-        src/simulator/encryption/bitcoin_secp256k1.cpp
-        src/simulator/encryption/ecc_secp256k1.cpp
-        src/simulator/encryption/ecc_sm2_handler.cpp
-        src/simulator/encryption/encryption.cpp
-        src/simulator/encryption/hash_handler.cpp
-        src/simulator/encryption/rsa_handler.cpp
-        src/simulator/simulator_world_state.cpp
-        src/simulator/simulator.cpp
-        src/simulator/simulator_object.cpp
-        src/simulator/machines/computer.cpp
-        src/simulator/machines/host.cpp
-        src/simulator/machines/message.cpp
-        src/simulator/machines/response_data.cpp
-        src/simulator/machines/rpc_response_header.cpp
-        src/simulator/machines/transmitter_event.cpp
-        src/simulator/machines/synchronous_registry.cpp
-        src/simulator/machines/host_delay_matrix.cpp
-        src/simulator/machines/network_card_task.cpp
-        src/simulator/machines/network_card.cpp
-        src/simulator/machines/cpu_processing_matrix.cpp
-        src/simulator/machines/simulator_net_event_queue.cpp
-        src/simulator/machines/central_processing_unit.cpp
-        src/simulator/machines/registry.cpp
-        src/simulator/machines/timer_node.cpp
-        src/simulator/machines/ipv4_address.cpp
-        src/simulator/machines/simulator_host_event_queue.cpp
-        src/simulator/machines/computer_simulator_timer.cpp
-        src/simulator/network_dispatcher.cpp
-        src/simulator/encryption/bls_mutsig.cpp
+    ${simulator_encryption_list}
+    ${simulator_machines_list}
+    ${threads_pool_cpp_list}
+    ${serializer_cpp_list}
+    ${simulator_list}
+    ${utils_list}
 )
 
 target_link_libraries(simulator
-        PUBLIC
-        museTimer
-        fmt
+    PUBLIC
+        fmt::fmt
+        mcl::mcl
+        mcl::mcl_st
+        bls::bls384_256
         ${OpenSSL_LIB_NAME_SSL}
         ${OpenSSL_LIB_NAME_CRYPTO}
         secp256k1
 )
 
 add_library(experiment SHARED
-        src/experiment/pbft/node.cpp
+    src/experiment/pbft/node.cpp
 )
 
-add_executable(runner main.cpp)
+add_executable(runner
+        main.cpp
+)
 
 target_link_libraries(runner PUBLIC simulator)

@@ -5,7 +5,7 @@
 #include <utility>
 #include <bitset>
 
-#include "thread_pool/pool.hpp"
+#include "simulator/pool/pool.hpp"
 #include "serializer/binarySerializer.h"
 #include "outcome.hpp"
 #include "response_data.hpp"

@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <climits>
 #include <cassert>
@@ -16,12 +15,10 @@
 #include "simulator/encryption/bitcoin_secp256k1.hpp"
 
 
+#include "mcl/bn_c384_256.h"
+#include "bls/bls.h"
+
 int main(int argc, char *argv[]) {
-    auto keypair = muse::chain::ecc_secp256k1::get_key();
-
-    //签名消息
-    const unsigned char message[64] = {"this is test data!"};
-
 
     return 0;
 }
