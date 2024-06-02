@@ -1,8 +1,8 @@
 #ifndef MUSE_SIMULATOR_MESSAGE_HPP
 #define MUSE_SIMULATOR_MESSAGE_HPP
 
-#include "utils/toolkits.hpp"
-#include "utils/singleton.hpp"
+#include "../utils/toolkits.hpp"
+#include "../utils/singleton.hpp"
 #include "host_delay_matrix.hpp"
 #include "transmitter_event.hpp"
 #include "cpu_processing_matrix.hpp"

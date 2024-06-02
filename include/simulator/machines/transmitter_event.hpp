@@ -5,11 +5,11 @@
 #include <utility>
 #include <bitset>
 
-#include "simulator/pool/pool.hpp"
-#include "serializer/binarySerializer.h"
+#include "../pool/pool.hpp"
+#include "../serializer/binarySerializer.h"
 #include "outcome.hpp"
 #include "response_data.hpp"
-#include "utils/toolkits.hpp"
+#include "../utils/toolkits.hpp"
 #include "fmt/format.h"
 
 namespace muse::simulator {

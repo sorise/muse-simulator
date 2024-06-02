@@ -1,4 +1,4 @@
-#include "utils/singleton.hpp"
+#include "simulator/utils/singleton.hpp"
 
 namespace muse::simulator {
     std::once_flag singleton_lazy_heap<std::pmr::synchronized_pool_resource>::_flag = std::once_flag();

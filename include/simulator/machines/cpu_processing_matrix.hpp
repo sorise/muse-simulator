@@ -1,8 +1,8 @@
 #ifndef MUSE_SIMULATOR_CPU_PROCESSING_MATRIX_HPP
 #define MUSE_SIMULATOR_CPU_PROCESSING_MATRIX_HPP
 
-#include "utils/toolkits.hpp"
-#include "utils/singleton.hpp"
+#include "../utils/toolkits.hpp"
+#include "../utils/singleton.hpp"
 #include <random>
 #include <ctime>
 #include <unordered_map>

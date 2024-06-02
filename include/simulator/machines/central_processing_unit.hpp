@@ -1,8 +1,8 @@
 #ifndef MUSE_SIMULATOR_CENTRAL_PROCESSING_UNIT_HPP
 #define MUSE_SIMULATOR_CENTRAL_PROCESSING_UNIT_HPP
 
-#include "utils/singleton.hpp"
-#include "utils/toolkits.hpp"
+#include "../utils/singleton.hpp"
+#include "../utils/toolkits.hpp"
 
 #include <condition_variable>
 #include <iostream>

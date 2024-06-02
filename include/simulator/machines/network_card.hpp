@@ -2,7 +2,6 @@
 #include "simulator_net_event_queue.hpp"
 #include "network_card_task.hpp"
 
-
 #ifndef MUSE_SIMULATOR_NETWORK_CARD_HPP
 #define MUSE_SIMULATOR_NETWORK_CARD_HPP
 /*

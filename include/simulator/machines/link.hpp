@@ -1,6 +1,6 @@
 #ifndef MUSE_SIMULATOR_LINK_HPP
 #define MUSE_SIMULATOR_LINK_HPP
-#include "utils/toolkits.hpp"
+#include "../utils/toolkits.hpp"
 #include <cstdint>
 
 namespace muse::simulator {

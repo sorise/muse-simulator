@@ -10,10 +10,11 @@
 #include <unordered_map>
 
 #include "simulator/machines/computer.hpp"
-#include "utils/singleton.hpp"
 #include "response_data.hpp"
 #include "rpc_response_header.hpp"
-#include "serializer/binarySerializer.h"
+
+#include "../utils/singleton.hpp"
+#include "../serializer/binarySerializer.h"
 #include "../network_dispatcher.hpp"
 
 using namespace muse::serializer;

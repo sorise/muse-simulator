@@ -1,8 +1,8 @@
 #ifndef MUSE_SIMULATOR_NETWORK_DISPATCHER_HPP
 #define MUSE_SIMULATOR_NETWORK_DISPATCHER_HPP
 
-#include "../utils/toolkits.hpp"
-#include "../utils/singleton.hpp"
+#include "utils/toolkits.hpp"
+#include "utils/singleton.hpp"
 
 #include <mutex>
 #include <vector>
@@ -25,14 +25,14 @@ namespace muse::simulator {
         static const std::string PREFIX;
     private:
         //那些已经注册了的主机  ip+端口
-        std::unordered_map<std::string, std::shared_ptr<muse::simulator::computer>> hosts;
-        std::list<std::shared_ptr<muse::simulator::computer>> host_list_;
+        std::unordered_map<std::string, muse::simulator::computer*> hosts;
+        std::list<muse::simulator::computer*> host_list_;
         std::shared_mutex mtx;
         //事件队列 ， RPC Server 触发、 RPC Client 回调函数触发
     public:
         /* 注册主机 */
         template<class C,  typename = std::enable_if_t<std::is_base_of<muse::simulator::computer, C>::value>>
-        bool register_host(std::shared_ptr<C> host_ptr){
+        bool register_host(C* host_ptr){
             static_assert(!std::is_same<C, computer>::value, "Type C must publicly derive from muse::simulator::computer");
             if (host_ptr == nullptr){
                 return false;
@@ -52,7 +52,7 @@ namespace muse::simulator {
 
         auto clear_hosts() -> void;
 
-        const std::list<std::shared_ptr<muse::simulator::computer>>& get_hosts_list();
+        const std::list<muse::simulator::computer*>& get_hosts_list();
 
         ~network_dispatcher();
     };

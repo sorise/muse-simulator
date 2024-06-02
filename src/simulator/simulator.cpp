@@ -25,7 +25,7 @@ namespace muse::simulator{
             for (const auto& host_ptr: hosts) {
                 auto token = muse::pool::make_executor([](computer* cmp){
                     cmp->START_UP();//启动主机
-                }, host_ptr.get());
+                }, host_ptr);
                 singleton_thread_pool::get_ptr()->commit_executor(token);
                 futures.push_back(token);
             }
@@ -55,7 +55,7 @@ namespace muse::simulator{
             for (const auto& host_ptr: hosts) {
                 auto token = muse::pool::make_executor([](computer* cmp, const uint64_t& _ms_tick)->void{
                     cmp->_next_tick(_ms_tick);//启动主机
-                }, host_ptr.get(),std::ref(ms_tick));
+                }, host_ptr, std::ref(ms_tick));
 
                 singleton_thread_pool::get_ptr()->commit_executor(token);
                 futures.push_back(token);

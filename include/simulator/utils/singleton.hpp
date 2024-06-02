@@ -8,9 +8,9 @@
 #include <exception>
 #include <memory>
 #include <memory_resource>
-#include <fmt/format.h>
-#include "simulator/pool/pool.hpp"
-#include "utils/toolkits.hpp"
+#include "fmt/format.h"
+#include "toolkits.hpp"
+#include "../pool/pool.hpp"
 
 namespace muse::simulator {
     /*
@@ -32,8 +32,8 @@ namespace muse::simulator {
         singleton_hungry_heap() = default;
         singleton_hungry_heap(const singleton_hungry_heap&) = default;
         singleton_hungry_heap& operator=(const singleton_hungry_heap&) = default;
-        ~singleton_hungry_heap()= default;
     private:
+        ~singleton_hungry_heap()= default;
         static std::unique_ptr<T> instance_ ;
     };
     template<typename T>
@@ -47,6 +47,7 @@ namespace muse::simulator {
     template<typename T>
     class singleton_hungry_static{
     public:
+        ~singleton_hungry_static()= default;
         static T& get_instance(){
             return instance_;
         }
@@ -54,7 +55,6 @@ namespace muse::simulator {
         singleton_hungry_static() = default;
         singleton_hungry_static(const singleton_hungry_static&) = default;
         singleton_hungry_static& operator=(const singleton_hungry_static&) = default;
-        ~singleton_hungry_static()= default;
     private:
         static T instance_ ;
     };
@@ -72,8 +72,9 @@ namespace muse::simulator {
         singleton_lazy_heap() = default;
         singleton_lazy_heap(const singleton_lazy_heap&) = default;
         singleton_lazy_heap& operator=(const singleton_lazy_heap&) = default;
-        ~singleton_lazy_heap()= default;
     public:
+        ~singleton_lazy_heap()= default;
+
         static T* get_ptr(){
             std::call_once(singleton_lazy_heap<T>::_flag, singleton_lazy_heap<T>::init);
             return instance_.get();
@@ -105,7 +106,6 @@ namespace muse::simulator {
         singleton_lazy_heap() = default;
         singleton_lazy_heap(const singleton_lazy_heap&) = default;
         singleton_lazy_heap& operator=(const singleton_lazy_heap&) = default;
-        ~singleton_lazy_heap()= default;
     public:
         static std::pmr::synchronized_pool_resource* get_ptr(){
             std::call_once(_flag, init);
@@ -116,6 +116,7 @@ namespace muse::simulator {
             std::call_once(_flag, init);
             return *(instance_);
         }
+        ~singleton_lazy_heap() = default;
     private:
 
         static void init(){
@@ -158,7 +159,10 @@ namespace muse::simulator {
         T* real = new(place) T(std::forward<Args>(args)...); //定位 new
         std::shared_ptr<T> result(real, [T_size](T *p){
             p->~T(); //析构函数调用
-            singleton_memory_pool::get_ptr()->deallocate(p, T_size);
+            auto mp = singleton_memory_pool::get_ptr();
+            if (mp != nullptr){
+                mp->deallocate(p, T_size);
+            }
         });
         return result;
     }

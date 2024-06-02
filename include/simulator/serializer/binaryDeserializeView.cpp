@@ -1,8 +1,4 @@
-//
-// Created by remix on 23-8-27.
-//
-
-#include "serializer/binaryDeserializeView.hpp"
+#include "binaryDeserializeView.hpp"
 
 namespace muse::serializer{
     class IBinarySerializable;

@@ -15,7 +15,7 @@
 #include "openssl/err.h"
 #include "simulator/encryption/uint256.hpp"
 #include "fmt/format.h"
-#include "utils/toolkits.hpp"
+#include "../utils/toolkits.hpp"
 
 namespace muse::chain {
 

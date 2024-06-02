@@ -9,8 +9,8 @@
 #include "machines/host_delay_matrix.hpp"
 #include "machines/cpu_processing_matrix.hpp"
 #include "machines/central_processing_unit.hpp"
-#include "simulator/pool/pool.hpp"
-#include "simulator/machines/ipv4_address.hpp"
+#include "pool/pool.hpp"
+#include "machines/ipv4_address.hpp"
 
 namespace muse::simulator{
     class SIMULATOR_CPP_WIN_API simulator: public simulator_object {

@@ -1,12 +1,9 @@
-//
-// Created by 14270 on 2024-04-12.
-//
-
 #ifndef MUSE_SIMULATOR_OUTCOME_HPP
 #define MUSE_SIMULATOR_OUTCOME_HPP
+
 #include "failure_reason.hpp"
 #include "rpc_response_header.hpp"
-#include "utils/toolkits.hpp"
+#include "../utils/toolkits.hpp"
 
 namespace muse::simulator{
     template<typename R>

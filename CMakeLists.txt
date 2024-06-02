@@ -101,9 +101,9 @@ find_library( crypto_Find_Result   ${OpenSSL_LIB_NAME_CRYPTO}  REQUIRED )
 aux_source_directory(src/simulator/encryption simulator_encryption_list)
 aux_source_directory(src/simulator/machines simulator_machines_list)
 aux_source_directory(include/simulator/pool threads_pool_cpp_list)
-aux_source_directory(include/serializer serializer_cpp_list)
+aux_source_directory(include/simulator/serializer serializer_cpp_list)
 aux_source_directory(src/simulator simulator_list)
-aux_source_directory(src/utils utils_list)
+aux_source_directory(src/simulator/utils utils_list)
 
 add_library(simulator SHARED
     ${simulator_encryption_list}
@@ -123,10 +123,6 @@ target_link_libraries(simulator
         ${OpenSSL_LIB_NAME_SSL}
         ${OpenSSL_LIB_NAME_CRYPTO}
         secp256k1
-)
-
-add_library(experiment SHARED
-    src/experiment/pbft/node.cpp
 )
 
 add_executable(runner

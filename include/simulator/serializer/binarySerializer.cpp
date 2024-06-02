@@ -3,7 +3,7 @@
 //
 #include <cstdint>
 #include <filesystem>
-#include "serializer/binarySerializer.h"
+#include "binarySerializer.h"
 
 namespace muse::serializer{
     class IBinarySerializable;
