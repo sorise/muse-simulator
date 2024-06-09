@@ -13,10 +13,10 @@ cd dependency
 cmake -S . -B build
 cmake --build build
 ```
-**安装**：
+**安装**：需要有管理员权限， windows安装.... 暂时还没摸索出来
 ```cpp
 cd build
-make install
+make install 
 ```
 
 ### 说明
