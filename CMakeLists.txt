@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
 
-cmake_policy(SET CMP0148 NEW)
-
 project(muse-simulator
         VERSION         0.0.1
         DESCRIPTION     "分布式算法仿真软件"
@@ -18,13 +16,6 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -fPIC")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fPIC")
-elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fPIC")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fPIC")
-endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     link_directories("/usr/local/lib")
@@ -34,6 +25,14 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set(CMAKE_CXX_FLAGS "${CAMKE_CXX_FLAGS} -std=c++17 -pthread -lcrypto -lssl")
     set(OpenSSL_LIB_NAME_SSL "ssl")
     set(OpenSSL_LIB_NAME_CRYPTO "crypto")
+    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+        set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -fPIC")
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fPIC")
+    elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fPIC")
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fPIC")
+    endif()
+
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     message(STATUS "Build in Windows OS on ${CURRENT_DATETIME} !")
     SET(OpenSSL_Include_Directory "C:\\Program Files\\OpenSSL-Win64\\include")
@@ -52,16 +51,24 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set(OpenSSL_LIB_NAME_SSL "libssl")
     set(OpenSSL_LIB_NAME_CRYPTO "libcrypto")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+        set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -fPIC")
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fPIC")
+    elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fPIC")
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fPIC")
+    endif()
 
 else()
     MESSAGE(FATAL_ERROR "didnt support the ${CMAKE_SYSTEM_NAME}.")
 endif()
 
-#add_subdirectory(dependency/bls)
-#include_directories(dependency/bls/include)
+add_subdirectory(dependency/bls)
+include_directories(dependency/bls/include)
+include_directories(dependency/bls/mcl/include)
 
-add_subdirectory(dependency/bls-signatures)
-include_directories(dependency/bls-signatures/src)
+#add_subdirectory(dependency/bls-signatures)
+#include_directories(dependency/bls-signatures/src)
 
 include(FetchContent)
 
@@ -128,10 +135,7 @@ add_library(simulator SHARED
 target_link_libraries(simulator
     PUBLIC
         fmt::fmt
-#        mcl::mcl
-#        mcl::mcl_st
-#        bls::bls384_256
-        bls
+        bls::bls384_256
         ${OpenSSL_LIB_NAME_SSL}
         ${OpenSSL_LIB_NAME_CRYPTO}
         secp256k1
