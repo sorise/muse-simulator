@@ -1,7 +1,7 @@
 //
 // Created by remix on 23-7-24.
 //
-#include "conf.h"
+#include "simulator/pool/conf.h"
 
 namespace muse::pool{
     extern std::chrono::milliseconds GetTick(){

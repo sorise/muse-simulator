@@ -118,8 +118,8 @@ find_library( crypto_Find_Result   ${OpenSSL_LIB_NAME_CRYPTO}  REQUIRED )
 
 aux_source_directory(src/simulator/encryption simulator_encryption_list)
 aux_source_directory(src/simulator/machines simulator_machines_list)
-aux_source_directory(include/simulator/pool threads_pool_cpp_list)
-aux_source_directory(include/simulator/serializer serializer_cpp_list)
+aux_source_directory(src/simulator/pool threads_pool_cpp_list)
+aux_source_directory(src/simulator/serializer serializer_cpp_list)
 aux_source_directory(src/simulator simulator_list)
 aux_source_directory(src/simulator/utils utils_list)
 
@@ -140,6 +140,22 @@ target_link_libraries(simulator
         ${OpenSSL_LIB_NAME_CRYPTO}
         secp256k1
 )
+
+set(INSTALL_PROGRAM_NAME "muse-simulator")
+
+# 指定安装目录
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    SET(CMAKE_INSTALL_PREFIX "C:/Program Files/${INSTALL_PROGRAM_NAME}")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    SET(CMAKE_INSTALL_PREFIX "/usr/local")
+else(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    SET(CMAKE_INSTALL_PREFIX "/usr/local")
+endif ()
+
+# 安装头文件
+install(DIRECTORY include/ DESTINATION include)
+#安装目标
+install(TARGETS simulator DESTINATION lib)
 
 add_executable(runner
         main.cpp

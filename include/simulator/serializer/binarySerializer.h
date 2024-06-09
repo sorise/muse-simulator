@@ -17,6 +17,8 @@
 #include <sstream>
 #include <cstdint>
 #include <array>
+#include <cstdint>
+#include <filesystem>
 
 #ifndef WIN32
     static_assert(__cplusplus >= 201103L, "C++ version is not right" );
