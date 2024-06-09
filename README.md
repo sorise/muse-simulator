@@ -3,6 +3,22 @@
 
 -----
 
+### 使用、安装
+前提本地环境已经安装好 cmake、git 等工具， 直接使用，在当前目录下继续开发，可以参考如下命令，运行：
+```cpp
+git clone git@github.com:sorise/muse-simulator.git
+cd dependency
+//windows 系统中手动解压 bls.zip 
+//linux 系统中解压 bls.zip：  unzip bls.zip
+cmake -S . -B build
+cmake --build build
+```
+**安装**：
+```cpp
+cd build
+make install
+```
+
 ### 说明
 该分布式算法仿真软件较为简单，模拟了网络环境、主机网卡、CPU、分布式定时器。
 * 支持用户自定义网络时延。
